@@ -22,5 +22,53 @@
   "Tunezja_Wielobarwna_Mozaika__Katowice__2os": {
     "link": "https://r.pl/tunezja-bajeczna-mozaika/zakwaterowanie-tuf?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
     "departure_from": "Katowice"
+  },
+  "Indie__Kolory_Pustynnych_Miast__Warszawa__1os": {
+    "link": "https://r.pl/kolory-pustynnych-miast/zakwaterowanie-inr?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
+    "departure_from": "Warszawa"
+  },
+  "Indie__Kolory_Pustynnych_Miast__Warszawa__2os": {
+    "link": "https://r.pl/kolory-pustynnych-miast/zakwaterowanie-inr?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
+    "departure_from": "Warszawa"
+  },
+  "Indie__Dzikie_i_Zmysłowe__Warszawa__1os": {
+    "link": "https://r.pl/dzikie-i-zmyslowe/zakwaterowanie-idz?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
+    "departure_from": "Warszawa"
+  },
+  "Indie__Dzikie_i_Zmysłowe__Warszawa__2os": {
+    "link": "https://r.pl/dzikie-i-zmyslowe/zakwaterowanie-idz?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
+    "departure_from": "Warszawa"
+  },
+  "Indie__Złoty_Trójkąt_i_plaże_Goa__Katowice__1os": {
+    "link": "https://r.pl/zloty-trojkat-i-plaze-goa/zakwaterowanie-igz?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
+    "departure_from": "Katowice"
+  },
+  "Indie__Złoty_Trójkąt_i_plaże_Goa__Katowice__2os": {
+    "link": "https://r.pl/zloty-trojkat-i-plaze-goa/zakwaterowanie-igz?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
+    "departure_from": "Katowice"
+  },
+  "Indie__W_miłosnych_objęciach__Katowice__1os": {
+    "link": "https://r.pl/w-milosnych-objeciach/zakwaterowanie-ida?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
+    "departure_from": "Katowice"
+  },
+  "Indie__W_miłosnych_objęciach__Katowice__2os": {
+    "link": "https://r.pl/w-milosnych-objeciach/zakwaterowanie-ida?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
+    "departure_from": "Katowice"
+  },
+  "Indie__Ślady_tygrysich_łap_na_piasku_z_wypoczynkiem_na_Goa__Katowice__1os": {
+    "link": "https://r.pl/slady-tygrysich-lap-na-piasku-z-wypoczynkiem-na-goa/zakwaterowanie-itg?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
+    "departure_from": "Katowice"
+  },
+  "Indie__Ślady_tygrysich_łap_na_piasku_z_wypoczynkiem_na_Goa__Katowice__2os": {
+    "link": "https://r.pl/slady-tygrysich-lap-na-piasku-z-wypoczynkiem-na-goa/zakwaterowanie-itg?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
+    "departure_from": "Katowice"
+  },
+  "Indie__Złoty_Trójkąt_i_Bollywood__Warszawa__1os": {
+    "link": "https://r.pl/zloty-trojkat-i-bollywood/zakwaterowanie-inz?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
+    "departure_from": "Warszawa"
+  },
+  "Indie__Złoty_Trójkąt_i_Bollywood__Warszawa__2os": {
+    "link": "https://r.pl/zloty-trojkat-i-bollywood/zakwaterowanie-inz?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
+    "departure_from": "Warszawa"
   }
 }
