@@ -89,7 +89,8 @@ def save_prices_to_csv(prices, file_path):
         for term, timestamps_prices in prices.items():
             timestamps.update(timestamps_prices.keys())
         
-        sorted_timestamps = sorted(timestamps)
+        print(f"Sorting the timestamps as datetime objects")
+        sorted_timestamps = sorted(timestamps, key=lambda timestamp: datetime.strptime(timestamp, "%d.%m.%Y %H:%M:%S"))
         writer.writerow([''] + sorted_timestamps)
         
         print(f"Sorting the dates in ascending order by the start date")
