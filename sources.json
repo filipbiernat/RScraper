@@ -1,98 +1,67 @@
 {
-  "Hiszpania__Hiszpanskie_El_Classico__Katowice__1os": {
-    "link": "https://r.pl/hiszpanskie-el-clasico/zakwaterowanie-hlx?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Katowice"
+  "global_config": {
+    "age_param": "1995-01-01"
   },
-  "Hiszpania__Hiszpanskie_El_Classico__Katowice__2os": {
-    "link": "https://r.pl/hiszpanskie-el-clasico/zakwaterowanie-hlx?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Katowice"
+  "defaults": {
+    "departure_locations": ["Katowice"],
+    "person_counts": [1, 2]
   },
-  "Tunezja__Wielobarwna_Mozaika__Katowice__1os": {
-    "link": "https://r.pl/tunezja-bajeczna-mozaika/zakwaterowanie-tuf?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Katowice"
-  },
-  "Tunezja__Wielobarwna_Mozaika__Katowice__2os": {
-    "link": "https://r.pl/tunezja-bajeczna-mozaika/zakwaterowanie-tuf?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Katowice"
-  },
-  "Indie__Kolory_Pustynnych_Miast__Warszawa__1os": {
-    "link": "https://r.pl/kolory-pustynnych-miast/zakwaterowanie-inr?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Warszawa"
-  },
-  "Indie__Kolory_Pustynnych_Miast__Warszawa__2os": {
-    "link": "https://r.pl/kolory-pustynnych-miast/zakwaterowanie-inr?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Warszawa"
-  },
-  "Indie__Dzikie_i_Zmyslowe__Warszawa__1os": {
-    "link": "https://r.pl/dzikie-i-zmyslowe/zakwaterowanie-idz?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Warszawa"
-  },
-  "Indie__Dzikie_i_Zmyslowe__Warszawa__2os": {
-    "link": "https://r.pl/dzikie-i-zmyslowe/zakwaterowanie-idz?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Warszawa"
-  },
-  "Indie__Zloty_Trojkat_i_plaze_Goa__Katowice__1os": {
-    "link": "https://r.pl/zloty-trojkat-i-plaze-goa/zakwaterowanie-igz?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Katowice"
-  },
-  "Indie__Zloty_Trojkat_i_plaze_Goa__Katowice__2os": {
-    "link": "https://r.pl/zloty-trojkat-i-plaze-goa/zakwaterowanie-igz?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Katowice"
-  },
-  "Indie__W_milosnych_objeciach__Katowice__1os": {
-    "link": "https://r.pl/w-milosnych-objeciach/zakwaterowanie-ida?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Katowice"
-  },
-  "Indie__W_milosnych_objeciach__Katowice__2os": {
-    "link": "https://r.pl/w-milosnych-objeciach/zakwaterowanie-ida?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Katowice"
-  },
-  "Indie__Slady_tygrysich_lap_na_piasku_z_wypoczynkiem_na_Goa__Katowice__1os": {
-    "link": "https://r.pl/slady-tygrysich-lap-na-piasku-z-wypoczynkiem-na-goa/zakwaterowanie-itg?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Katowice"
-  },
-  "Indie__Slady_tygrysich_lap_na_piasku_z_wypoczynkiem_na_Goa__Katowice__2os": {
-    "link": "https://r.pl/slady-tygrysich-lap-na-piasku-z-wypoczynkiem-na-goa/zakwaterowanie-itg?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Katowice"
-  },
-  "Indie__Zloty_Trojkat_i_Bollywood__Warszawa__1os": {
-    "link": "https://r.pl/zloty-trojkat-i-bollywood/zakwaterowanie-inz?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Warszawa"
-  },
-  "Indie__Zloty_Trojkat_i_Bollywood__Warszawa__2os": {
-    "link": "https://r.pl/zloty-trojkat-i-bollywood/zakwaterowanie-inz?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Warszawa"
-  },
-  "Sri_Lanka__Harce_na_Lance__Warszawa__1os": {
-    "link": "https://r.pl/harce-na-lance/zakwaterowanie-slh?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Warszawa"
-  },
-  "Sri_Lanka__Harce_na_Lance__Warszawa__2os": {
-    "link": "https://r.pl/harce-na-lance/zakwaterowanie-slh?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Warszawa"
-  },
-  "Sri_Lanka__Lza_z_policzka_Indii__Warszawa__1os": {
-    "link": "https://r.pl/sri-lanka-lza-z-policzka-indii/zakwaterowanie-slt?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Warszawa"
-  },
-  "Sri_Lanka__Lza_z_policzka_Indii__Warszawa__2os": {
-    "link": "https://r.pl/sri-lanka-lza-z-policzka-indii/zakwaterowanie-slt?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Warszawa"
-  },
-  "Chiny__Chiny_Cesarskie__Warszawa__1os": {
-    "link": "https://r.pl/chiny-cesarskie/zakwaterowanie-chc?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Warszawa"
-  },
-  "Chiny__Chiny_Cesarskie__Warszawa__2os": {
-    "link": "https://r.pl/chiny-cesarskie/zakwaterowanie-chc?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Warszawa"
-  },
-  "Chiny__W_krainie_zlotego_smoka__Warszawa__1os": {
-    "link": "https://r.pl/chiny-w-krainie-zlotego-smoka/zakwaterowanie-cht?czyCenaZaWszystkich=1&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Warszawa"
-  },
-  "Chiny__W_krainie_zlotego_smoka__Warszawa__2os": {
-    "link": "https://r.pl/chiny-w-krainie-zlotego-smoka/zakwaterowanie-cht?czyCenaZaWszystkich=1&wiek=1995-01-01&wiek=1995-01-01&liczbaPokoi=1",
-    "departure_from": "Warszawa"
+  "trips": {
+    "Hiszpańskie El Clasico": {
+      "country": "Hiszpania",
+      "base_url": "https://r.pl/hiszpanskie-el-clasico/zakwaterowanie-hlx"
+    },
+    "Wielobarwna Mozaika": {
+      "country": "Tunezja",
+      "base_url": "https://r.pl/tunezja-bajeczna-mozaika/zakwaterowanie-tuf",
+      "departure_locations": ["Katowice", "Rzeszów"]
+    },
+    "Kolory Pustynnych Miast": {
+      "country": "Indie",
+      "base_url": "https://r.pl/kolory-pustynnych-miast/zakwaterowanie-inr",
+      "departure_locations": ["Warszawa"]
+    },
+    "Dzikie i Zmysłowe": {
+      "country": "Indie",
+      "base_url": "https://r.pl/dzikie-i-zmyslowe/zakwaterowanie-idz",
+      "departure_locations": ["Warszawa"]
+    },
+    "Złoty Trójkąt i plaże Goa": {
+      "country": "Indie",
+      "base_url": "https://r.pl/zloty-trojkat-i-plaze-goa/zakwaterowanie-igz"
+    },
+    "W miłosnych objęciach": {
+      "country": "Indie",
+      "base_url": "https://r.pl/w-milosnych-objeciach/zakwaterowanie-ida"
+    },
+    "Ślady tygrysich łap na piasku z wypoczynkiem na Goa": {
+      "country": "Indie",
+      "base_url": "https://r.pl/slady-tygrysich-lap-na-piasku-z-wypoczynkiem-na-goa/zakwaterowanie-itg"
+    },
+    "Złoty Trójkąt i Bollywood": {
+      "country": "Indie",
+      "base_url": "https://r.pl/zloty-trojkat-i-bollywood/zakwaterowanie-inz",
+      "departure_locations": ["Warszawa"]
+    },
+    "Harce na Lance": {
+      "country": "Sri Lanka",
+      "base_url": "https://r.pl/harce-na-lance/zakwaterowanie-slh",
+      "departure_locations": ["Warszawa"]
+    },
+    "Łza z policzka Indii": {
+      "country": "Sri Lanka",
+      "base_url": "https://r.pl/sri-lanka-lza-z-policzka-indii/zakwaterowanie-slt",
+      "departure_locations": ["Warszawa"]
+    },
+    "Chiny Cesarskie": {
+      "country": "Chiny",
+      "base_url": "https://r.pl/chiny-cesarskie/zakwaterowanie-chc",
+      "departure_locations": ["Warszawa"]
+    },
+    "W krainie złotego smoka": {
+      "country": "Chiny",
+      "base_url": "https://r.pl/chiny-w-krainie-zlotego-smoka/zakwaterowanie-cht",
+      "departure_locations": ["Warszawa"]
+    }
   }
 }
