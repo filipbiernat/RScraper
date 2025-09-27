@@ -169,3 +169,39 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Node.js / React / RDisplay application
+RDisplay/node_modules/
+RDisplay/dist/
+RDisplay/build/
+RDisplay/.env
+RDisplay/.env.local
+RDisplay/.env.development.local
+RDisplay/.env.test.local
+RDisplay/.env.production.local
+
+# Logs
+RDisplay/npm-debug.log*
+RDisplay/yarn-debug.log*
+RDisplay/yarn-error.log*
+RDisplay/pnpm-debug.log*
+RDisplay/lerna-debug.log*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp

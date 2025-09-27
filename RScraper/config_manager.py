@@ -89,6 +89,52 @@ def generate_trip_combinations(config_data):
     return combinations
 
 
+def generate_offer_link(base_url, person_count, age_param):
+    """Generate offer link using the same logic as build_url"""
+    return build_url(base_url, person_count, age_param)
+
+
+def append_offer_link_to_csv(csv_file_path, offer_url):
+    """Append or update OFFER_LINK row in CSV file"""
+    if not os.path.exists(csv_file_path):
+        print(f"CSV file {csv_file_path} does not exist, skipping offer link addition")
+        return
+
+    # Read existing content
+    with open(csv_file_path, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+
+    # Remove existing OFFER_LINK if present
+    lines = [line for line in lines if not line.startswith('OFFER_LINK,')]
+
+    # Add new OFFER_LINK at the end
+    offer_line = f"OFFER_LINK,{offer_url}" + "," * (len(lines[0].split(',')) - 2) + "\n"
+    lines.append(offer_line)
+
+    # Write back to file
+    with open(csv_file_path, 'w', encoding='utf-8') as f:
+        f.writelines(lines)
+
+    print(f"Added offer link to {csv_file_path}: {offer_url}")
+
+
+def add_offer_links_to_existing_csvs(combinations, data_dir="../data"):
+    """Add offer links to all existing CSV files based on combinations"""
+    print("Adding offer links to existing CSV files...")
+
+    for combination_name, combination_data in combinations.items():
+        csv_filename = f"{combination_name}.csv"
+        csv_file_path = os.path.join(data_dir, csv_filename)
+
+        if os.path.exists(csv_file_path):
+            offer_url = combination_data['link']
+            append_offer_link_to_csv(csv_file_path, offer_url)
+        else:
+            print(f"CSV file {csv_file_path} not found, skipping")
+
+    print("Finished adding offer links to CSV files")
+
+
 def load_and_generate_combinations(json_file_path):
     """Load configuration from JSON file and generate all trip combinations"""
     config_data = load_config(json_file_path)

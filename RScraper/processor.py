@@ -105,8 +105,13 @@ def save_prices_to_csv(prices, file_path):
             writer.writerow(row)
     print(f"Merged data saved to: '{file_path}'")
 
-def process_data(results, file_path):
+def process_data(results, file_path, offer_url=None):
     existing_prices = load_existing_prices(file_path)
     new_prices = build_new_prices(results)
     merged_prices = merge_prices(existing_prices, new_prices)
     save_prices_to_csv(merged_prices, file_path)
+
+    # Add offer link if provided
+    if offer_url:
+        from config_manager import append_offer_link_to_csv
+        append_offer_link_to_csv(file_path, offer_url)

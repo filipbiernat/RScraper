@@ -1,0 +1,31 @@
+{
+  "name": "RDisplay - Travel Data Visualization",
+  "short_name": "RDisplay",
+  "description": "Modern React application for visualizing travel pricing data from RScraper",
+  "theme_color": "#1976d2",
+  "background_color": "#121212",
+  "display": "standalone",
+  "scope": "/RDisplay/",
+  "start_url": "/RDisplay/",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["productivity", "business", "finance"],
+  "screenshots": [
+    {
+      "src": "screenshot.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ]
+}
