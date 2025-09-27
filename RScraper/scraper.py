@@ -17,10 +17,10 @@ def configure_driver():
         options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    
+
     if not IS_WINDOWS:
         options.binary_location = "/usr/bin/chromium-browser"
-    
+
     return webdriver.Chrome(options=options)
 
 def click_button(driver, description, xpath, timeout=20):
@@ -63,6 +63,32 @@ def click_div(driver, description, xpath, timeout=20):
         print(f"Error clicking on DIV block '{description}': {e}")
         raise Exception(f"DIV block '{description}' not found: {e}.")
 
+def click_first_button_in_div(driver, description, xpath, timeout=20):
+    print(f"Attempting to click first button in DIV block: {description}")
+    try:
+        # Ensure the DIV block is visible
+        xpath_element = (By.XPATH, xpath)
+        located_div_block = WebDriverWait(driver, timeout).until(
+            EC.presence_of_element_located(xpath_element)
+        )
+        driver.execute_script("arguments[0].scrollIntoView();", located_div_block)
+
+        # Find the first button inside the DIV block
+        first_button = located_div_block.find_element(By.TAG_NAME, "button")
+
+        # Ensure the button is clickable
+        clickable_button = WebDriverWait(driver, timeout).until(
+            EC.element_to_be_clickable(first_button)
+        )
+
+        # Click
+        driver.execute_script("arguments[0].click();", clickable_button)
+        print(f"First button in DIV block '{description}' clicked successfully.")
+    except Exception as e:
+        driver.quit()
+        print(f"Error clicking first button in DIV block '{description}': {e}")
+        raise Exception(f"First button in DIV block '{description}' not found: {e}.")
+
 def wait_for_loader_to_disappear(driver, timeout=20):
     print("Waiting for the loader to disappear")
     try:
@@ -91,36 +117,109 @@ def extract_text(driver, xpath, description, timeout=10):
 
 def parse_dates_and_prices(text):
     print("Parsing dates and prices from extracted text...")
-    regex = r"(\d{2}\.\d{2} - \d{2}\.\d{2}).*?\n([\d\s]+)zł"
-    matches = re.finditer(regex, text, re.DOTALL)
-    parsed_data = [(match.group(1), match.group(2).replace(" ", "").replace("\n", "")) for match in matches]
-    print(f"Parsed data: {parsed_data}")
-    return parsed_data
+
+    # Map month names to numbers
+    months_map = {
+        'sty': '01', 'lut': '02', 'mar': '03', 'kwi': '04',
+        'maj': '05', 'cze': '06', 'lip': '07', 'sie': '08',
+        'wrz': '09', 'paź': '10', 'lis': '11', 'gru': '12'
+    }
+
+    parsed_data = []
+
+    # Pattern 1: "22 paź - 03 lis" (full format with two months)
+    regex1 = r"(\d{1,2})\s+(\w{3})\s+-\s+(\d{1,2})\s+(\w{3}).*?(\d{1,3}(?:\s?\d{3})*)\s*zł"
+    matches1 = re.finditer(regex1, text, re.DOTALL | re.IGNORECASE)
+
+    for match in matches1:
+        start_day = match.group(1).zfill(2)
+        start_month_name = match.group(2).lower()
+        end_day = match.group(3).zfill(2)
+        end_month_name = match.group(4).lower()
+        price = match.group(5).replace(" ", "")
+
+        start_month = months_map.get(start_month_name, "??")
+        end_month = months_map.get(end_month_name, "??")
+
+        if start_month != "??" and end_month != "??":
+            date_range = f"{start_day}.{start_month} - {end_day}.{end_month}"
+            parsed_data.append((date_range, price))
+        else:
+            print(f"Unknown month: {start_month_name} or {end_month_name}")
+
+    # Pattern 2: "03 - 15 gru" (format with one month at the end)
+    regex2 = r"(\d{1,2})\s+-\s+(\d{1,2})\s+(\w{3}).*?(\d{1,3}(?:\s?\d{3})*)\s*zł"
+    matches2 = re.finditer(regex2, text, re.DOTALL | re.IGNORECASE)
+
+    for match in matches2:
+        start_day = match.group(1).zfill(2)
+        end_day = match.group(2).zfill(2)
+        month_name = match.group(3).lower()
+        price = match.group(4).replace(" ", "")
+
+        month = months_map.get(month_name, "??")
+
+        if month != "??":
+            date_range = f"{start_day}.{month} - {end_day}.{month}"
+            parsed_data.append((date_range, price))
+        else:
+            print(f"Unknown month: {month_name}")
+
+    # Pattern 3: "24 gru 2025 - 05 sty" (format with year)
+    regex3 = r"(\d{1,2})\s+(\w{3})\s+\d{4}\s+-\s+(\d{1,2})\s+(\w{3}).*?(\d{1,3}(?:\s?\d{3})*)\s*zł"
+    matches3 = re.finditer(regex3, text, re.DOTALL | re.IGNORECASE)
+
+    for match in matches3:
+        start_day = match.group(1).zfill(2)
+        start_month_name = match.group(2).lower()
+        end_day = match.group(3).zfill(2)
+        end_month_name = match.group(4).lower()
+        price = match.group(5).replace(" ", "")
+
+        start_month = months_map.get(start_month_name, "??")
+        end_month = months_map.get(end_month_name, "??")
+
+        if start_month != "??" and end_month != "??":
+            date_range = f"{start_day}.{start_month} - {end_day}.{end_month}"
+            parsed_data.append((date_range, price))
+        else:
+            print(f"Unknown month: {start_month_name} or {end_month_name}")
+
+    # Remove duplicates (preserve order)
+    seen = set()
+    unique_data = []
+    for item in parsed_data:
+        if item not in seen:
+            seen.add(item)
+            unique_data.append(item)
+
+    print(f"Parsed data: {unique_data}")
+    return unique_data
 
 def get_dates_and_prices(url, departure_from):
     print(f"Opening URL: {url}")
     driver = configure_driver()
     driver.get(url)
-    
+
     WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
-    
+
     print("Waiting for page to load...")
     click_button(driver, "Akceptuj wszystkie", "//button[contains(., 'Akceptuj wszystkie')]")
 
 
     click_button(driver, "Miejsce wylotu", "//button[@data-test-id='r-select-button:kartaHotelu-konfigurator:polaczenie']")
-    click_div(driver, departure_from, f"//div[contains(., '{departure_from}') and contains(@data-test-id, 'r-component:pojedyncze-polaczenie:container')]")
+    click_first_button_in_div(driver, f"Miejsce wylotu: {departure_from}", f"//div[contains(., '{departure_from}') and contains(@data-test-id, 'r-component:pojedyncze-polaczenie:container')]")
     wait_for_loader_to_disappear(driver)
 
     click_button(driver, "Termin", "//button[contains(@class, 'r-select-button-termin')]")
-    click_button(driver, "Lista", "//button[@data-test-id='r-tab:kartaHotelu-konfigurator-termin:1']")
+    click_div(driver, "Lista", "//div[contains(@class, 'kh-tooltip-termin__list-types')]")
 
     print("Extracting text...")
     date_list_xpath = "//div[contains(@class, 'kh-terminy-list')]"
     date_list_text = extract_text(driver, date_list_xpath, "Departure dates list")
-    
+
     driver.quit()
-    
+
     if date_list_text:
         return parse_dates_and_prices(date_list_text)
     return []
