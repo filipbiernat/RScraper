@@ -1,4 +1,4 @@
-# RScraper & RDisplay
+# RScraper & Web Interface
 
 A comprehensive travel data scraping and visualization solution for monitoring trip pricing across multiple destinations and time periods.
 
@@ -6,7 +6,7 @@ A comprehensive travel data scraping and visualization solution for monitoring t
 
 This repository contains two main components:
 - **RScraper** - Python web scraper for collecting travel pricing data from booking websites
-- **RDisplay** - Modern React TypeScript web application for visualizing and analyzing collected data
+- **Web Interface** - Modern React TypeScript web application for visualizing and analyzing collected data
 
 ## 🏗️ Repository Structure
 
@@ -19,7 +19,7 @@ RScraper/
 │   └── config_manager.py # Configuration management
 ├── data/               # Generated CSV files with pricing data
 ├── sources.json        # Trip configuration and URLs
-├── RDisplay/           # React TypeScript visualization app
+├── RDisplay/           # React TypeScript web interface
 │   ├── public/
 │   ├── src/
 │   ├── package.json
@@ -89,7 +89,7 @@ Edit `sources.json` to:
 - Change person count options
 - Update base URLs for booking sites
 
-## ⚛️ RDisplay - Data Visualization Web App
+## ⚛️ Web Interface - Data Visualization Dashboard
 
 ### Features
 - Modern React TypeScript interface
@@ -139,7 +139,7 @@ npm run build
 npm run deploy
 ```
 
-**Live URL:** https://filipbiernat.github.io/RDisplay
+**Live URL:** https://filipbiernat.github.io/RScraper
 
 ### Usage
 
@@ -189,7 +189,7 @@ The application uses smart cascading filters:
 4. Schedule regular runs for price tracking
 
 ### Visualization Workflow
-1. Open RDisplay web application
+1. Open RScraper web interface
 2. Select desired filters (country, trip, etc.)
 3. View real-time pricing data and trends
 4. Data automatically loaded from repository
@@ -209,7 +209,7 @@ python RScraper.py
 python -c "from config_manager import *; print(load_config('../sources.json'))"
 ```
 
-### React Development (RDisplay)
+### React Development (Web Interface)
 ```bash
 # Start development server
 cd RDisplay
@@ -238,7 +238,7 @@ npm run preview
    ```
 
 2. **Run scraper** to generate initial data
-3. **RDisplay automatically** detects new options
+3. **Web interface automatically** detects new options
 
 ## 🚀 Deployment
 
@@ -247,14 +247,14 @@ npm run preview
 - Consider GitHub Actions for automated data collection
 - Ensure Chrome/ChromeDriver compatibility
 
-### RDisplay Hosting
+### Web Interface Hosting
 - **GitHub Pages:** Automatic deployment from `gh-pages` branch
 - **Alternative:** Netlify, Vercel, or any static hosting
 - **CDN:** Automatic via GitHub Pages
 
 ## 📱 Browser Support
 
-### RDisplay Compatibility
+### Web Interface Compatibility
 - **Modern browsers:** Chrome 88+, Firefox 85+, Safari 14+, Edge 88+
 - **Mobile:** iOS Safari 14+, Chrome Mobile 88+
 - **Features:** ES2020, CSS Grid, Flexbox required
@@ -291,7 +291,7 @@ npm run dev
 cd RDisplay
 npm run build
 npm run deploy
-# Visit https://filipbiernat.github.io/RDisplay
+# Visit https://filipbiernat.github.io/RScraper
 ```
 
 ---

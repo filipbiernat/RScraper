@@ -81,7 +81,7 @@ const App: React.FC = () => {
     }
 
     const baseTitle = parts.length > 0 ? parts.join(' • ') : 'Travel Data Visualization';
-    return `${baseTitle} – RDisplay`;
+    return `${baseTitle} – RScraper`;
   };
 
   // Load sources.json configuration directly from GitHub

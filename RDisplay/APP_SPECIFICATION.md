@@ -1,8 +1,8 @@
-# RDisplay - Travel Data Visualization Application
+# RScraper - Travel Data Visualization Application
 
 ## 🎯 Project Overview
 
-RDisplay is a modern React TypeScript application designed to visualize travel pricing data collected by the RScraper tool. The application provides an elegant, minimalist interface for exploring trip prices across different countries, destinations, departure airports, and participant counts.
+RScraper Web Interface is a modern React TypeScript application designed to visualize travel pricing data collected by the RScraper tool. The application provides an elegant, minimalist interface for exploring trip prices across different countries, destinations, departure airports, and participant counts.
 
 ## 🏗️ Architecture
 
@@ -202,7 +202,7 @@ npm run deploy  # Deploys to gh-pages branch
 ```typescript
 // vite.config.ts
 export default {
-  base: '/RDisplay/',
+  base: '/RScraper/',
   build: {
     outDir: 'dist'
   }
@@ -348,5 +348,5 @@ src/
 
 **Status:** ✅ **COMPLETED** - Full implementation finished! 🎉
 
-**Live Development Server:** http://localhost:5173/RDisplay/
+**Live Development Server:** http://localhost:5173/RScraper/
 **Production Deployment:** Ready for `npm run deploy`

@@ -1,12 +1,12 @@
 {
-  "name": "RDisplay - Travel Data Visualization",
-  "short_name": "RDisplay",
+  "name": "RScraper - Travel Data Visualization",
+  "short_name": "RScraper",
   "description": "Modern React application for visualizing travel pricing data from RScraper",
   "theme_color": "#1976d2",
   "background_color": "#121212",
   "display": "standalone",
-  "scope": "/RDisplay/",
-  "start_url": "/RDisplay/",
+  "scope": "/RScraper/",
+  "start_url": "/RScraper/",
   "icons": [
     {
       "src": "favicon.svg",
