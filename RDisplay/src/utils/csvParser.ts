@@ -4,11 +4,12 @@
 
 import type { CsvData, TripTerm, PriceEntry, ParsedCsvRow } from '../types/csvData';
 import { parseDateFromTerm, parseEndDateFromTerm, isTripPast } from './dateUtils';
+import { configManager } from './configManager';
 
 /**
  * Parse CSV text content into structured data
  */
-export const parseCsvContent = (csvContent: string, fileName: string): CsvData => {
+export const parseCsvContent = async (csvContent: string, fileName: string): Promise<CsvData> => {
   const lines = csvContent.trim().split('\n');
 
   if (lines.length < 2) {
@@ -66,11 +67,20 @@ export const parseCsvContent = (csvContent: string, fileName: string): CsvData =
     ? activeTimestamps[activeTimestamps.length - 1]
     : '';
 
+  // Generate offer URL if possible
+  let offerUrl: string | undefined;
+  try {
+    offerUrl = await configManager.buildOfferUrl(fileName) || undefined;
+  } catch (error) {
+    console.warn(`Failed to generate offer URL for ${fileName}:`, error);
+  }
+
   return {
     fileName,
     timestamps: activeTimestamps,
     terms,
-    lastUpdated
+    lastUpdated,
+    offerUrl
   };
 };
 
@@ -90,7 +100,7 @@ export const loadCsvFile = async (fileName: string): Promise<CsvData> => {
 
     const csvContent = await response.text();
 
-    return parseCsvContent(csvContent, fileName);
+    return await parseCsvContent(csvContent, fileName);
   } catch (error) {
     console.error(`Error loading CSV file ${fileName}:`, error);
     throw error;
