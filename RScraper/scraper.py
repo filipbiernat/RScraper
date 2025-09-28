@@ -1,11 +1,11 @@
 import re
-import platform
-import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
+import platform
 
 IS_IN_BACKGROUND = True
 IS_WINDOWS = platform.system() == "Windows"
@@ -53,19 +53,13 @@ def click_div(driver, description, xpath, timeout=20):
         located_div_block = WebDriverWait(driver, timeout).until(
             EC.presence_of_element_located(xpath_element)
         )
-        driver.execute_script("arguments[0].scrollIntoView();", located_div_block)
-
-        # Ensure the DIV block is clickable
-        clickable_div_block = WebDriverWait(driver, timeout).until(
-            EC.element_to_be_clickable(located_div_block)
-        )
 
         # Click
-        driver.execute_script("arguments[0].click();", clickable_div_block)
+        driver.execute_script("arguments[0].click();", located_div_block)
         print(f"DIV block '{description}' clicked successfully.")
     except Exception as e:
         driver.quit()
-        print(f"Error clicking on DIV block '{description}': {e}")
+        print(f"Error clicking DIV block '{description}': {e}")
         raise Exception(f"DIV block '{description}' not found: {e}.")
 
 def click_first_button_in_div(driver, description, xpath, timeout=20):
@@ -76,7 +70,6 @@ def click_first_button_in_div(driver, description, xpath, timeout=20):
         located_div_block = WebDriverWait(driver, timeout).until(
             EC.presence_of_element_located(xpath_element)
         )
-        driver.execute_script("arguments[0].scrollIntoView();", located_div_block)
 
         # Find the first button inside the DIV block
         first_button = located_div_block.find_element(By.TAG_NAME, "button")
@@ -121,8 +114,6 @@ def extract_text(driver, xpath, description, timeout=10):
         return None
 
 def parse_dates_and_prices(text):
-
-
     # Map month names to numbers
     months_map = {
         'sty': '01', 'lut': '02', 'mar': '03', 'kwi': '04',
@@ -130,116 +121,103 @@ def parse_dates_and_prices(text):
         'wrz': '09', 'paź': '10', 'lis': '11', 'gru': '12'
     }
 
-    # Extract year information from month headers
-    year_headers = {}
-    header_pattern = r"(Październik|Listopad|Grudzień|Styczeń|Luty|Marzec|Kwiecień|Maj|Czerwiec|Lipiec|Sierpień|Wrzesień)\s+(\d{4})"
-    header_matches = re.finditer(header_pattern, text, re.IGNORECASE)
-
-    for match in header_matches:
-        month_name = match.group(1).lower()
-        year = match.group(2)
-
-        # Map Polish month names to abbreviated forms
-        month_mapping = {
-            'październik': 'paź', 'listopad': 'lis', 'grudzień': 'gru',
-            'styczeń': 'sty', 'luty': 'lut', 'marzec': 'mar',
-            'kwiecień': 'kwi', 'maj': 'maj', 'czerwiec': 'cze',
-            'lipiec': 'lip', 'sierpień': 'sie', 'wrzesień': 'wrz'
-        }
-
-        if month_name in month_mapping:
-            abbrev_month = month_mapping[month_name]
-            year_headers[abbrev_month] = year
-
-
+    # Parse the text sequentially to maintain proper month-year associations
     parsed_data = []
 
-    def get_year_for_month(month_abbrev):
-        """Get year for a month from parsed headers"""
-        if month_abbrev in year_headers:
-            return year_headers[month_abbrev]
+    # Map Polish month names to abbreviated forms
+    month_mapping = {
+        'październik': 'paź', 'listopad': 'lis', 'grudzień': 'gru',
+        'styczeń': 'sty', 'luty': 'lut', 'marzec': 'mar',
+        'kwiecień': 'kwi', 'maj': 'maj', 'czerwiec': 'cze',
+        'lipiec': 'lip', 'sierpień': 'sie', 'wrzesień': 'wrz'
+    }
 
-        # If month not found in headers, it's an error - we should have all months
+    # Find all month headers with their positions
+    header_pattern = r"(Październik|Listopad|Grudzień|Styczeń|Luty|Marzec|Kwiecień|Maj|Czerwiec|Lipiec|Sierpień|Wrzesień)\s+(\d{4})"
+    headers = []
+    for match in re.finditer(header_pattern, text, re.IGNORECASE):
+        month_name = match.group(1).lower()
+        year = match.group(2)
+        abbrev_month = month_mapping.get(month_name)
+        if abbrev_month:
+            headers.append({
+                'month': abbrev_month,
+                'year': year,
+                'start_pos': match.start(),
+                'end_pos': match.end()
+            })
 
-        return "2025"  # fallback to avoid crashes    # Pattern 1: "22 paź - 03 lis" (full format with two months, no year)
-    # Use negative lookahead to avoid matching patterns with explicit year
-    regex1 = r"(\d{1,2})\s+(\w{3})\s+-\s+(\d{1,2})\s+(\w{3})(?!\s+\d{4}).*?(\d{1,3}(?:\s?\d{3})*)\s*zł"
-    matches1 = re.finditer(regex1, text, re.DOTALL | re.IGNORECASE)
+    # Process each section between headers
+    for i, header in enumerate(headers):
+        current_month = header['month']
+        current_year = header['year']
 
-    for match in matches1:
-        start_day = match.group(1).zfill(2)
-        start_month_name = match.group(2).lower()
-        end_day = match.group(3).zfill(2)
-        end_month_name = match.group(4).lower()
-        price = match.group(5).replace(" ", "")
+        # Get text for this section (from this header to next header or end)
+        start_pos = header['end_pos']
+        end_pos = headers[i + 1]['start_pos'] if i + 1 < len(headers) else len(text)
+        section_text = text[start_pos:end_pos]
 
-        start_month = months_map.get(start_month_name, "??")
-        end_month = months_map.get(end_month_name, "??")
+        # Pattern 1: "22 paź - 03 lis" (cross-month dates)
+        regex1 = r"(\d{1,2})\s+(\w{3})\s+-\s+(\d{1,2})\s+(\w{3}).*?(\d{1,3}(?:\s?\d{3})*)\s*zł"
+        for match in re.finditer(regex1, section_text, re.DOTALL | re.IGNORECASE):
+            start_day = match.group(1).zfill(2)
+            start_month_name = match.group(2).lower()
+            end_day = match.group(3).zfill(2)
+            end_month_name = match.group(4).lower()
+            price = match.group(5).replace(" ", "")
 
-        if start_month != "??" and end_month != "??":
-            start_year = get_year_for_month(start_month_name)
+            start_month = months_map.get(start_month_name, "??")
+            end_month = months_map.get(end_month_name, "??")
 
-            # Handle year transition: if end month is earlier than start month, it's next year
-            if int(end_month) < int(start_month):
-                end_year = str(int(start_year) + 1)
-            else:
-                end_year = start_year
+            if start_month != "??" and end_month != "??":
+                # Use current year for start month
+                start_year = current_year
+                # Handle year transition
+                if int(end_month) < int(start_month):
+                    end_year = str(int(start_year) + 1)
+                else:
+                    end_year = start_year
 
-            date_range = f"{start_day}.{start_month}.{start_year} - {end_day}.{end_month}.{end_year}"
-
-            parsed_data.append((date_range, price))
-        else:
-            print(f"Unknown month: {start_month_name} or {end_month_name}")
-
-    # Pattern 2: "03 - 15 gru" (format with one month at the end)
-    regex2 = r"(\d{1,2})\s+-\s+(\d{1,2})\s+(\w{3}).*?(\d{1,3}(?:\s?\d{3})*)\s*zł"
-    matches2 = re.finditer(regex2, text, re.DOTALL | re.IGNORECASE)
-
-    for match in matches2:
-        start_day = match.group(1).zfill(2)
-        end_day = match.group(2).zfill(2)
-        month_name = match.group(3).lower()
-        price = match.group(4).replace(" ", "")
-
-        month = months_map.get(month_name, "??")
-
-        if month != "??":
-            # Validate that start_day <= end_day (same month)
-            if int(start_day) <= int(end_day):
-                year = get_year_for_month(month_name)
-                date_range = f"{start_day}.{month}.{year} - {end_day}.{month}.{year}"
-
+                date_range = f"{start_day}.{start_month}.{start_year} - {end_day}.{end_month}.{end_year}"
                 parsed_data.append((date_range, price))
-        else:
-            print(f"Unknown month: {month_name}")
 
-    # Pattern 3: "25 gru 2025 - 01 sty" (format with explicit year)
-    regex3 = r"(\d{1,2})\s+(\w{3})\s+(\d{4})\s+-\s+(\d{1,2})\s+(\w{3}).*?(\d{1,3}(?:\s?\d{3})*)\s*zł"
-    matches3 = re.finditer(regex3, text, re.DOTALL | re.IGNORECASE)
+        # Pattern 2: "03 - 15 gru" (same month dates)
+        regex2 = r"(\d{1,2})\s+-\s+(\d{1,2})\s+(\w{3}).*?(\d{1,3}(?:\s?\d{3})*)\s*zł"
+        for match in re.finditer(regex2, section_text, re.DOTALL | re.IGNORECASE):
+            start_day = match.group(1).zfill(2)
+            end_day = match.group(2).zfill(2)
+            month_name = match.group(3).lower()
+            price = match.group(4).replace(" ", "")
 
-    for match in matches3:
-        start_day = match.group(1).zfill(2)
-        start_month_name = match.group(2).lower()
-        start_year = match.group(3)
-        end_day = match.group(4).zfill(2)
-        end_month_name = match.group(5).lower()
-        price = match.group(6).replace(" ", "")
+            month = months_map.get(month_name, "??")
 
-        start_month = months_map.get(start_month_name, "??")
-        end_month = months_map.get(end_month_name, "??")
+            if month != "??" and int(start_day) <= int(end_day):
+                # Use current year
+                date_range = f"{start_day}.{month}.{current_year} - {end_day}.{month}.{current_year}"
+                parsed_data.append((date_range, price))
 
-        if start_month != "??" and end_month != "??":
-            # Handle year transition when end month is earlier than start month
-            if int(end_month) < int(start_month):
-                end_year = str(int(start_year) + 1)
-            else:
-                end_year = start_year
+        # Pattern 3: "25 gru 2025 - 01 sty" (format with explicit year)
+        regex3 = r"(\d{1,2})\s+(\w{3})\s+(\d{4})\s+-\s+(\d{1,2})\s+(\w{3}).*?(\d{1,3}(?:\s?\d{3})*)\s*zł"
+        for match in re.finditer(regex3, section_text, re.DOTALL | re.IGNORECASE):
+            start_day = match.group(1).zfill(2)
+            start_month_name = match.group(2).lower()
+            start_year = match.group(3)
+            end_day = match.group(4).zfill(2)
+            end_month_name = match.group(5).lower()
+            price = match.group(6).replace(" ", "")
 
-            date_range = f"{start_day}.{start_month}.{start_year} - {end_day}.{end_month}.{end_year}"
+            start_month = months_map.get(start_month_name, "??")
+            end_month = months_map.get(end_month_name, "??")
 
-            parsed_data.append((date_range, price))
-        else:
-            print(f"Unknown month: {start_month_name} or {end_month_name}")
+            if start_month != "??" and end_month != "??":
+                # Handle year transition when end month is earlier than start month
+                if int(end_month) < int(start_month):
+                    end_year = str(int(start_year) + 1)
+                else:
+                    end_year = start_year
+
+                date_range = f"{start_day}.{start_month}.{start_year} - {end_day}.{end_month}.{end_year}"
+                parsed_data.append((date_range, price))
 
     # Remove duplicates (preserve order)
     seen = set()
@@ -249,8 +227,8 @@ def parse_dates_and_prices(text):
             seen.add(item)
             unique_data.append(item)
 
-
     return unique_data
+
 
 def get_dates_and_prices(url, departure_from):
     print(f"Opening URL: {url}")
