@@ -60,8 +60,6 @@ export const formatDisplayDate = (date: Date): string => {
  * Group trip terms by year and sort chronologically
  */
 export const groupTermsByYear = (terms: any[]): any[] => {
-  const currentYear = new Date().getFullYear();
-
   // Group terms by year
   const yearGroups = new Map<number, any[]>();
 
@@ -76,11 +74,11 @@ export const groupTermsByYear = (terms: any[]): any[] => {
   // Convert to array and sort by year
   const sortedYears = Array.from(yearGroups.keys()).sort((a, b) => a - b);
 
-  return sortedYears.map(year => ({
+  return sortedYears.map((year, index) => ({
     year,
     terms: yearGroups.get(year)!.sort((a: any, b: any) =>
       a.startDate.getTime() - b.startDate.getTime()
     ),
-    isExpanded: year === currentYear // Current year is expanded by default
+    isExpanded: index === 0 // Always expand first (earliest) year
   }));
 };
