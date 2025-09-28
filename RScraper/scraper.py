@@ -23,7 +23,7 @@ def configure_driver():
 
     return webdriver.Chrome(options=options)
 
-def click_button(driver, description, xpath, timeout=20):
+def click_button(driver, description, xpath, timeout=20, optional=False):
     print(f"Attempting to click button: {description}")
     try:
         # Ensure the button is clickable
@@ -35,10 +35,15 @@ def click_button(driver, description, xpath, timeout=20):
         # Click
         button.click()
         print(f"Button '{description}' clicked successfully.")
+        return True
     except Exception as e:
-        driver.quit()
-        print(f"Error clicking button '{description}': {e}")
-        raise Exception(f"Button '{description}' not found: {e}.")
+        if optional:
+            print(f"Optional button '{description}' not found, continuing: {e}")
+            return False
+        else:
+            driver.quit()
+            print(f"Error clicking button '{description}': {e}")
+            raise Exception(f"Button '{description}' not found: {e}.")
 
 def click_div(driver, description, xpath, timeout=20):
     print(f"Attempting to click on DIV block: {description}")
@@ -116,7 +121,7 @@ def extract_text(driver, xpath, description, timeout=10):
         return None
 
 def parse_dates_and_prices(text):
-    print("Parsing dates and prices from extracted text...")
+
 
     # Map month names to numbers
     months_map = {
@@ -145,34 +150,20 @@ def parse_dates_and_prices(text):
         if month_name in month_mapping:
             abbrev_month = month_mapping[month_name]
             year_headers[abbrev_month] = year
-            print(f"Found year mapping: {abbrev_month} -> {year}")
+
 
     parsed_data = []
 
-    def get_year_for_month(month_abbrev, fallback_year="2025"):
-        """Get year for a month, with fallback logic"""
+    def get_year_for_month(month_abbrev):
+        """Get year for a month from parsed headers"""
         if month_abbrev in year_headers:
             return year_headers[month_abbrev]
 
-        # Fallback logic: if we have any year info, try to infer
-        if year_headers:
-            available_years = list(set(year_headers.values()))
-            # If we have both 2025 and 2026, assume earlier months are 2025, later are 2026
-            if len(available_years) > 1:
-                month_order = ['sty', 'lut', 'mar', 'kwi', 'maj', 'cze',
-                              'lip', 'sie', 'wrz', 'paź', 'lis', 'gru']
-                if month_abbrev in month_order:
-                    month_index = month_order.index(month_abbrev)
-                    # Assume Oct-Dec are current year, Jan-Sep are next year if we have multiple years
-                    if month_index <= 8:  # Jan-Sep
-                        return max(available_years)
-                    else:  # Oct-Dec
-                        return min(available_years)
+        # If month not found in headers, it's an error - we should have all months
 
-        return fallback_year
-
-    # Pattern 1: "22 paź - 03 lis" (full format with two months)
-    regex1 = r"(\d{1,2})\s+(\w{3})\s+-\s+(\d{1,2})\s+(\w{3}).*?(\d{1,3}(?:\s?\d{3})*)\s*zł"
+        return "2025"  # fallback to avoid crashes    # Pattern 1: "22 paź - 03 lis" (full format with two months, no year)
+    # Use negative lookahead to avoid matching patterns with explicit year
+    regex1 = r"(\d{1,2})\s+(\w{3})\s+-\s+(\d{1,2})\s+(\w{3})(?!\s+\d{4}).*?(\d{1,3}(?:\s?\d{3})*)\s*zł"
     matches1 = re.finditer(regex1, text, re.DOTALL | re.IGNORECASE)
 
     for match in matches1:
@@ -187,9 +178,15 @@ def parse_dates_and_prices(text):
 
         if start_month != "??" and end_month != "??":
             start_year = get_year_for_month(start_month_name)
-            end_year = get_year_for_month(end_month_name)
+
+            # Handle year transition: if end month is earlier than start month, it's next year
+            if int(end_month) < int(start_month):
+                end_year = str(int(start_year) + 1)
+            else:
+                end_year = start_year
 
             date_range = f"{start_day}.{start_month}.{start_year} - {end_day}.{end_month}.{end_year}"
+
             parsed_data.append((date_range, price))
         else:
             print(f"Unknown month: {start_month_name} or {end_month_name}")
@@ -207,9 +204,12 @@ def parse_dates_and_prices(text):
         month = months_map.get(month_name, "??")
 
         if month != "??":
-            year = get_year_for_month(month_name)
-            date_range = f"{start_day}.{month}.{year} - {end_day}.{month}.{year}"
-            parsed_data.append((date_range, price))
+            # Validate that start_day <= end_day (same month)
+            if int(start_day) <= int(end_day):
+                year = get_year_for_month(month_name)
+                date_range = f"{start_day}.{month}.{year} - {end_day}.{month}.{year}"
+
+                parsed_data.append((date_range, price))
         else:
             print(f"Unknown month: {month_name}")
 
@@ -229,13 +229,14 @@ def parse_dates_and_prices(text):
         end_month = months_map.get(end_month_name, "??")
 
         if start_month != "??" and end_month != "??":
-            # For end year, if it's January and start is December, it's next year
-            if end_month_name == 'sty' and start_month_name == 'gru':
+            # Handle year transition when end month is earlier than start month
+            if int(end_month) < int(start_month):
                 end_year = str(int(start_year) + 1)
             else:
-                end_year = get_year_for_month(end_month_name, start_year)
+                end_year = start_year
 
             date_range = f"{start_day}.{start_month}.{start_year} - {end_day}.{end_month}.{end_year}"
+
             parsed_data.append((date_range, price))
         else:
             print(f"Unknown month: {start_month_name} or {end_month_name}")
@@ -248,7 +249,7 @@ def parse_dates_and_prices(text):
             seen.add(item)
             unique_data.append(item)
 
-    print(f"Parsed data: {unique_data}")
+
     return unique_data
 
 def get_dates_and_prices(url, departure_from):
@@ -259,7 +260,24 @@ def get_dates_and_prices(url, departure_from):
     WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
 
     print("Waiting for page to load...")
-    click_button(driver, "Akceptuj wszystkie", "//button[contains(., 'Akceptuj wszystkie')]")
+
+    # Try to accept cookies - this is optional as the button might not exist
+    cookie_xpaths = [
+        "//button[contains(., 'Akceptuj wszystkie')]",
+        "//button[contains(., 'Akceptuj')]",
+        "//button[contains(@class, 'cookie') and contains(., 'Akceptuj')]",
+        "//button[@id='cookie-accept']",
+        "//a[contains(., 'Akceptuj wszystkie')]"
+    ]
+
+    cookie_accepted = False
+    for xpath in cookie_xpaths:
+        if click_button(driver, "Akceptuj cookies", xpath, timeout=5, optional=True):
+            cookie_accepted = True
+            break
+
+    if not cookie_accepted:
+        print("No cookie consent button found - continuing without accepting cookies")
 
 
     click_button(driver, "Miejsce wylotu", "//button[@data-test-id='r-select-button:kartaHotelu-konfigurator:polaczenie']")
