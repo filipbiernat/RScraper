@@ -18,7 +18,39 @@ export const parseCsvContent = async (csvContent: string, fileName: string): Pro
 
   // Parse header row (timestamps)
   const headerRow = lines[0].split(',');
-  const timestamps = headerRow.slice(1); // Skip first empty column
+  const originalTimestamps = headerRow.slice(1); // Skip first empty column
+
+  // Create timestamp-index pairs for sorting
+  const timestampIndexPairs = originalTimestamps.map((timestamp, index) => ({
+    timestamp,
+    originalIndex: index
+  }));
+
+  // Sort timestamps from newest to oldest
+  timestampIndexPairs.sort((a, b) => {
+    // Parse timestamps in format "dd.mm.yyyy hh:mm:ss"
+    const parseTimestamp = (ts: string): Date => {
+      const [date, time] = ts.split(' ');
+      const [day, month, year] = date.split('.');
+      const [hour, minute, second] = time.split(':');
+      return new Date(
+        parseInt(year, 10),
+        parseInt(month, 10) - 1, // Month is 0-based
+        parseInt(day, 10),
+        parseInt(hour, 10),
+        parseInt(minute, 10),
+        parseInt(second, 10)
+      );
+    };
+
+    const dateA = parseTimestamp(a.timestamp);
+    const dateB = parseTimestamp(b.timestamp);
+    return dateB.getTime() - dateA.getTime(); // Newest first
+  });
+
+  // Extract sorted timestamps and create mapping
+  const timestamps = timestampIndexPairs.map(pair => pair.timestamp);
+  const indexMapping = timestampIndexPairs.map(pair => pair.originalIndex);
 
   // Parse data rows
   const parsedRows: ParsedCsvRow[] = [];
@@ -26,27 +58,38 @@ export const parseCsvContent = async (csvContent: string, fileName: string): Pro
   for (let i = 1; i < lines.length; i++) {
     const row = lines[i].split(',');
     const dateRange = row[0];
-    const prices = row.slice(1).map(priceStr => {
+    const originalPrices = row.slice(1).map(priceStr => {
       const price = parseInt(priceStr, 10);
       return isNaN(price) ? null : price;
     });
+
+    // Reorder prices according to timestamp sorting
+    const prices = indexMapping.map(originalIndex => originalPrices[originalIndex]);
 
     parsedRows.push({ dateRange, prices });
   }  // Filter out past trips
   const futureRows = parsedRows.filter(row => !isTripPast(row.dateRange));
 
+  // Filter timestamps that have at least one valid price entry
+  const activeTimestamps = timestamps.filter((_, index) =>
+    futureRows.some(row => row.prices[index] !== null && row.prices[index] !== undefined)
+  );
+
+  // Remove the newest timestamp from history columns to avoid duplication with "Current Price"
+  const historyTimestamps = activeTimestamps.slice(1);
+
   // Convert to TripTerm objects
   const terms: TripTerm[] = futureRows.map(row => {
-    const priceHistory: PriceEntry[] = timestamps
+    // Current price is from the first (newest) timestamp
+    const currentPrice = row.prices[0] || 0;
+
+    // Price history excludes the current (newest) price to avoid duplication
+    const priceHistory: PriceEntry[] = historyTimestamps
       .map((timestamp, index) => ({
         timestamp,
-        price: row.prices[index] || 0
+        price: row.prices[index + 1] || 0  // +1 because we skip the first (current) price
       }))
       .filter(entry => entry.price > 0); // Only valid prices
-
-    const currentPrice = priceHistory.length > 0
-      ? priceHistory[priceHistory.length - 1].price
-      : 0;
 
     return {
       dateRange: row.dateRange,
@@ -57,14 +100,9 @@ export const parseCsvContent = async (csvContent: string, fileName: string): Pro
     };
   });
 
-  // Filter timestamps that have at least one valid price entry
-  const activeTimestamps = timestamps.filter((_, index) =>
-    futureRows.some(row => row.prices[index] !== null && row.prices[index] !== undefined)
-  );
-
-  // Determine last updated timestamp
+  // Determine last updated timestamp (first in sorted array = newest)
   const lastUpdated = activeTimestamps.length > 0
-    ? activeTimestamps[activeTimestamps.length - 1]
+    ? activeTimestamps[0]
     : '';
 
   // Generate offer URL if possible
@@ -77,7 +115,7 @@ export const parseCsvContent = async (csvContent: string, fileName: string): Pro
 
   return {
     fileName,
-    timestamps: activeTimestamps,
+    timestamps: historyTimestamps,
     terms,
     lastUpdated,
     offerUrl
