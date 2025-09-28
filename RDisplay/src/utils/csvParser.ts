@@ -3,7 +3,7 @@
  */
 
 import type { CsvData, TripTerm, PriceEntry, ParsedCsvRow } from '../types/csvData';
-import { parseDateFromTerm, parseEndDateFromTerm, isTripPast } from './dateUtils';
+import { parseDateFromTerm, parseEndDateFromTerm, isTripPast, groupTermsByYear } from './dateUtils';
 import { configManager } from './configManager';
 
 /**
@@ -105,6 +105,9 @@ export const parseCsvContent = async (csvContent: string, fileName: string): Pro
     ? activeTimestamps[0]
     : '';
 
+  // Group terms by year
+  const yearGroups = groupTermsByYear(terms);
+
   // Generate offer URL if possible
   let offerUrl: string | undefined;
   try {
@@ -117,6 +120,7 @@ export const parseCsvContent = async (csvContent: string, fileName: string): Pro
     fileName,
     timestamps: historyTimestamps,
     terms,
+    yearGroups,
     lastUpdated,
     offerUrl
   };

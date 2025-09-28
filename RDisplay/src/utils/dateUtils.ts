@@ -4,45 +4,25 @@
  */
 
 /**
- * Parse date from term format "dd.mm - dd.mm" and assign proper year
- * Logic matches RScraper's parse_date_from_term function
+ * Parse date from term format "dd.mm.yyyy - dd.mm.yyyy"
  */
 export const parseDateFromTerm = (term: string): Date => {
-  const today = new Date();
-
-  // Extract start date from format "dd.mm - dd.mm"
+  // Extract start date from the term
   const startDateStr = term.split(' - ')[0];
-  const [day, month] = startDateStr.split('.').map(num => parseInt(num, 10));
+  const [day, month, year] = startDateStr.split('.').map(num => parseInt(num, 10));
 
-  // Create date with current year
-  let fullDate = new Date(today.getFullYear(), month - 1, day);
-
-  // If date is in the past, assign next year
-  if (fullDate < today) {
-    fullDate.setFullYear(today.getFullYear() + 1);
-  }
-
-  return fullDate;
+  return new Date(year, month - 1, day);
 };
 
 /**
- * Parse end date from term format "dd.mm - dd.mm"
+ * Parse end date from term format "dd.mm.yyyy - dd.mm.yyyy"
  */
 export const parseEndDateFromTerm = (term: string): Date => {
-  const startDate = parseDateFromTerm(term);
-
   // Extract end date
   const endDateStr = term.split(' - ')[1];
-  const [day, month] = endDateStr.split('.').map(num => parseInt(num, 10));
+  const [day, month, year] = endDateStr.split('.').map(num => parseInt(num, 10));
 
-  let endDate = new Date(startDate.getFullYear(), month - 1, day);
-
-  // If end month is before start month, it's likely next year
-  if (endDate < startDate) {
-    endDate.setFullYear(startDate.getFullYear() + 1);
-  }
-
-  return endDate;
+  return new Date(year, month - 1, day);
 };
 
 /**
@@ -74,4 +54,33 @@ export const formatDisplayDate = (date: Date): string => {
     month: '2-digit',
     year: 'numeric'
   });
+};
+
+/**
+ * Group trip terms by year and sort chronologically
+ */
+export const groupTermsByYear = (terms: any[]): any[] => {
+  const currentYear = new Date().getFullYear();
+
+  // Group terms by year
+  const yearGroups = new Map<number, any[]>();
+
+  terms.forEach(term => {
+    const year = term.startDate.getFullYear();
+    if (!yearGroups.has(year)) {
+      yearGroups.set(year, []);
+    }
+    yearGroups.get(year)!.push(term);
+  });
+
+  // Convert to array and sort by year
+  const sortedYears = Array.from(yearGroups.keys()).sort((a, b) => a - b);
+
+  return sortedYears.map(year => ({
+    year,
+    terms: yearGroups.get(year)!.sort((a: any, b: any) =>
+      a.startDate.getTime() - b.startDate.getTime()
+    ),
+    isExpanded: year === currentYear // Current year is expanded by default
+  }));
 };

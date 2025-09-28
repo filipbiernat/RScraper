@@ -125,7 +125,51 @@ def parse_dates_and_prices(text):
         'wrz': '09', 'paź': '10', 'lis': '11', 'gru': '12'
     }
 
+    # Extract year information from month headers
+    year_headers = {}
+    header_pattern = r"(Październik|Listopad|Grudzień|Styczeń|Luty|Marzec|Kwiecień|Maj|Czerwiec|Lipiec|Sierpień|Wrzesień)\s+(\d{4})"
+    header_matches = re.finditer(header_pattern, text, re.IGNORECASE)
+
+    for match in header_matches:
+        month_name = match.group(1).lower()
+        year = match.group(2)
+
+        # Map Polish month names to abbreviated forms
+        month_mapping = {
+            'październik': 'paź', 'listopad': 'lis', 'grudzień': 'gru',
+            'styczeń': 'sty', 'luty': 'lut', 'marzec': 'mar',
+            'kwiecień': 'kwi', 'maj': 'maj', 'czerwiec': 'cze',
+            'lipiec': 'lip', 'sierpień': 'sie', 'wrzesień': 'wrz'
+        }
+
+        if month_name in month_mapping:
+            abbrev_month = month_mapping[month_name]
+            year_headers[abbrev_month] = year
+            print(f"Found year mapping: {abbrev_month} -> {year}")
+
     parsed_data = []
+
+    def get_year_for_month(month_abbrev, fallback_year="2025"):
+        """Get year for a month, with fallback logic"""
+        if month_abbrev in year_headers:
+            return year_headers[month_abbrev]
+
+        # Fallback logic: if we have any year info, try to infer
+        if year_headers:
+            available_years = list(set(year_headers.values()))
+            # If we have both 2025 and 2026, assume earlier months are 2025, later are 2026
+            if len(available_years) > 1:
+                month_order = ['sty', 'lut', 'mar', 'kwi', 'maj', 'cze',
+                              'lip', 'sie', 'wrz', 'paź', 'lis', 'gru']
+                if month_abbrev in month_order:
+                    month_index = month_order.index(month_abbrev)
+                    # Assume Oct-Dec are current year, Jan-Sep are next year if we have multiple years
+                    if month_index <= 8:  # Jan-Sep
+                        return max(available_years)
+                    else:  # Oct-Dec
+                        return min(available_years)
+
+        return fallback_year
 
     # Pattern 1: "22 paź - 03 lis" (full format with two months)
     regex1 = r"(\d{1,2})\s+(\w{3})\s+-\s+(\d{1,2})\s+(\w{3}).*?(\d{1,3}(?:\s?\d{3})*)\s*zł"
@@ -142,7 +186,10 @@ def parse_dates_and_prices(text):
         end_month = months_map.get(end_month_name, "??")
 
         if start_month != "??" and end_month != "??":
-            date_range = f"{start_day}.{start_month} - {end_day}.{end_month}"
+            start_year = get_year_for_month(start_month_name)
+            end_year = get_year_for_month(end_month_name)
+
+            date_range = f"{start_day}.{start_month}.{start_year} - {end_day}.{end_month}.{end_year}"
             parsed_data.append((date_range, price))
         else:
             print(f"Unknown month: {start_month_name} or {end_month_name}")
@@ -160,27 +207,35 @@ def parse_dates_and_prices(text):
         month = months_map.get(month_name, "??")
 
         if month != "??":
-            date_range = f"{start_day}.{month} - {end_day}.{month}"
+            year = get_year_for_month(month_name)
+            date_range = f"{start_day}.{month}.{year} - {end_day}.{month}.{year}"
             parsed_data.append((date_range, price))
         else:
             print(f"Unknown month: {month_name}")
 
-    # Pattern 3: "24 gru 2025 - 05 sty" (format with year)
-    regex3 = r"(\d{1,2})\s+(\w{3})\s+\d{4}\s+-\s+(\d{1,2})\s+(\w{3}).*?(\d{1,3}(?:\s?\d{3})*)\s*zł"
+    # Pattern 3: "25 gru 2025 - 01 sty" (format with explicit year)
+    regex3 = r"(\d{1,2})\s+(\w{3})\s+(\d{4})\s+-\s+(\d{1,2})\s+(\w{3}).*?(\d{1,3}(?:\s?\d{3})*)\s*zł"
     matches3 = re.finditer(regex3, text, re.DOTALL | re.IGNORECASE)
 
     for match in matches3:
         start_day = match.group(1).zfill(2)
         start_month_name = match.group(2).lower()
-        end_day = match.group(3).zfill(2)
-        end_month_name = match.group(4).lower()
-        price = match.group(5).replace(" ", "")
+        start_year = match.group(3)
+        end_day = match.group(4).zfill(2)
+        end_month_name = match.group(5).lower()
+        price = match.group(6).replace(" ", "")
 
         start_month = months_map.get(start_month_name, "??")
         end_month = months_map.get(end_month_name, "??")
 
         if start_month != "??" and end_month != "??":
-            date_range = f"{start_day}.{start_month} - {end_day}.{end_month}"
+            # For end year, if it's January and start is December, it's next year
+            if end_month_name == 'sty' and start_month_name == 'gru':
+                end_year = str(int(start_year) + 1)
+            else:
+                end_year = get_year_for_month(end_month_name, start_year)
+
+            date_range = f"{start_day}.{start_month}.{start_year} - {end_day}.{end_month}.{end_year}"
             parsed_data.append((date_range, price))
         else:
             print(f"Unknown month: {start_month_name} or {end_month_name}")

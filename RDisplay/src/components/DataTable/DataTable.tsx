@@ -2,7 +2,7 @@
  * Main data table component for displaying trip pricing data
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -14,9 +14,11 @@ import {
   Typography,
   Box,
   Chip,
-  Skeleton
+  Skeleton,
+  IconButton
 } from '@mui/material';
-import type { CsvData } from '../../types/csvData';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import type { CsvData, YearGroup } from '../../types/csvData';
 
 interface DataTableProps {
   data: CsvData | null;
@@ -25,6 +27,107 @@ interface DataTableProps {
 }
 
 export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) => {
+  const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
+
+  // Initialize expanded years when data changes
+  React.useEffect(() => {
+    if (data?.yearGroups) {
+      const defaultExpanded = data.yearGroups
+        .filter(group => group.isExpanded)
+        .map(group => group.year);
+      setExpandedYears(new Set(defaultExpanded));
+    }
+  }, [data]);
+
+  const toggleYearExpansion = (year: number) => {
+    setExpandedYears(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(year)) {
+        newSet.delete(year);
+      } else {
+        newSet.add(year);
+      }
+      return newSet;
+    });
+  };
+
+  const renderYearGroup = (yearGroup: YearGroup) => {
+    const isExpanded = expandedYears.has(yearGroup.year);
+
+    return (
+      <React.Fragment key={yearGroup.year}>
+        {/* Year header row */}
+        <TableRow>
+          <TableCell
+            colSpan={2 + (data?.timestamps.length || 0)}
+            sx={{
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              '&:hover': { bgcolor: 'primary.dark' }
+            }}
+            onClick={() => toggleYearExpansion(yearGroup.year)}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <IconButton
+                size="small"
+                sx={{ color: 'inherit' }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleYearExpansion(yearGroup.year);
+                }}
+              >
+                <ExpandMoreIcon
+                  sx={{
+                    transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.2s'
+                  }}
+                />
+              </IconButton>
+              <Typography variant="h6">
+                {yearGroup.year} ({yearGroup.terms.length} trips)
+              </Typography>
+            </Box>
+          </TableCell>
+        </TableRow>
+
+        {/* Trip rows for this year (only if expanded) */}
+        {isExpanded && yearGroup.terms.map((term, index) => (
+          <TableRow
+            key={`${yearGroup.year}-${index}`}
+            hover
+            sx={{ '&:nth-of-type(odd)': { bgcolor: 'action.hover' } }}
+          >
+            <TableCell sx={{ fontWeight: 'medium', pl: 4 }}>
+              {term.dateRange}
+            </TableCell>
+            <TableCell>
+              <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                {formatPrice(term.currentPrice)} zł
+              </Typography>
+            </TableCell>
+            {data?.timestamps.map((timestamp, timestampIndex) => {
+              const priceEntry = term.priceHistory.find(p => p.timestamp === timestamp);
+              return (
+                <TableCell key={timestampIndex} sx={{ textAlign: 'center' }}>
+                  {priceEntry ? (
+                    <Typography variant="body2">
+                      {formatPrice(priceEntry.price)} zł
+                    </Typography>
+                  ) : (
+                    <Typography variant="body2" color="text.disabled">
+                      —
+                    </Typography>
+                  )}
+                </TableCell>
+              );
+            })}
+          </TableRow>
+        ))}
+      </React.Fragment>
+    );
+  };
   if (loading) {
     return (
       <Box>
@@ -195,38 +298,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.terms.map((term, index) => (
-              <TableRow
-                key={index}
-                hover
-                sx={{ '&:nth-of-type(odd)': { bgcolor: 'action.hover' } }}
-              >
-                <TableCell sx={{ fontWeight: 'medium' }}>
-                  {term.dateRange}
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-                    {formatPrice(term.currentPrice)} zł
-                  </Typography>
-                </TableCell>
-                {data.timestamps.map((timestamp, timestampIndex) => {
-                  const priceEntry = term.priceHistory.find(p => p.timestamp === timestamp);
-                  return (
-                    <TableCell key={timestampIndex} sx={{ textAlign: 'center' }}>
-                      {priceEntry ? (
-                        <Typography variant="body2">
-                          {formatPrice(priceEntry.price)} zł
-                        </Typography>
-                      ) : (
-                        <Typography variant="body2" color="text.disabled">
-                          —
-                        </Typography>
-                      )}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))}
+            {data.yearGroups.map(yearGroup => renderYearGroup(yearGroup))}
           </TableBody>
         </Table>
       </TableContainer>
