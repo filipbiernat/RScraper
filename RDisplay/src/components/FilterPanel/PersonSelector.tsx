@@ -37,7 +37,7 @@ export const PersonSelector: React.FC<PersonSelectorProps> = ({
         onChange={handleChange}
         row
       >
-        {options.map((count) => (
+        {options.sort((a, b) => a - b).map((count) => (
           <FormControlLabel
             key={count}
             value={count.toString()}

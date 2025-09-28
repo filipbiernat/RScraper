@@ -41,7 +41,7 @@ export const AirportSelector: React.FC<AirportSelectorProps> = ({
         <MenuItem value="">
           <em>Select Airport</em>
         </MenuItem>
-        {options.map((airport) => (
+        {options.sort().map((airport) => (
           <MenuItem key={airport} value={airport}>
             {airport}
           </MenuItem>

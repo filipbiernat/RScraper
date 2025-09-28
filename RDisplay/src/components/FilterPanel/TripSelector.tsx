@@ -41,7 +41,7 @@ export const TripSelector: React.FC<TripSelectorProps> = ({
         <MenuItem value="">
           <em>Select Trip</em>
         </MenuItem>
-        {options.map((trip) => (
+        {options.sort().map((trip) => (
           <MenuItem key={trip} value={trip}>
             {trip}
           </MenuItem>

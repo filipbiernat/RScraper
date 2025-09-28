@@ -41,7 +41,7 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
         <MenuItem value="">
           <em>Select Country</em>
         </MenuItem>
-        {options.map((country) => (
+        {options.sort().map((country) => (
           <MenuItem key={country} value={country}>
             {country}
           </MenuItem>
