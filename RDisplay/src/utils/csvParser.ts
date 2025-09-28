@@ -19,29 +19,19 @@ export const parseCsvContent = (csvContent: string, fileName: string): CsvData =
   const headerRow = lines[0].split(',');
   const timestamps = headerRow.slice(1); // Skip first empty column
 
-  // Parse data rows and extract special rows
+  // Parse data rows
   const parsedRows: ParsedCsvRow[] = [];
-  let offerUrl: string | undefined = undefined;
 
   for (let i = 1; i < lines.length; i++) {
     const row = lines[i].split(',');
     const dateRange = row[0];
-
-    // Skip special rows like OFFER_LINK but extract the URL
-    if (dateRange === 'OFFER_LINK') {
-      offerUrl = row[1] || undefined;
-      continue;
-    }
-
     const prices = row.slice(1).map(priceStr => {
       const price = parseInt(priceStr, 10);
       return isNaN(price) ? null : price;
     });
 
     parsedRows.push({ dateRange, prices });
-  }
-
-  // Filter out past trips
+  }  // Filter out past trips
   const futureRows = parsedRows.filter(row => !isTripPast(row.dateRange));
 
   // Convert to TripTerm objects
@@ -76,16 +66,11 @@ export const parseCsvContent = (csvContent: string, fileName: string): CsvData =
     ? activeTimestamps[activeTimestamps.length - 1]
     : '';
 
-  // Generate GitHub blob URL
-  const githubBlobUrl = `https://github.com/filipbiernat/RScraper/blob/master/data/${fileName}`;
-
   return {
     fileName,
     timestamps: activeTimestamps,
     terms,
-    lastUpdated,
-    githubBlobUrl,
-    offerUrl
+    lastUpdated
   };
 };
 

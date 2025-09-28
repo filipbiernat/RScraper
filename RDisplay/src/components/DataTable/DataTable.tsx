@@ -131,11 +131,11 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
         />
       </Box>
 
-      {/* Links section */}
-      <Box sx={{ mb: 2, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+      {/* GitHub CSV link */}
+      <Box sx={{ mb: 2 }}>
         <Typography
           component="a"
-          href={data.githubBlobUrl}
+          href={`https://github.com/filipbiernat/RScraper/blob/master/data/${data.fileName}`}
           target="_blank"
           rel="noopener noreferrer"
           variant="body2"
@@ -147,22 +147,6 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
         >
           📊 View CSV Data on GitHub
         </Typography>
-        {data.offerUrl && (
-          <Typography
-            component="a"
-            href={data.offerUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="body2"
-            sx={{
-              color: 'secondary.main',
-              textDecoration: 'none',
-              '&:hover': { textDecoration: 'underline' }
-            }}
-          >
-            🌍 View Trip Offer
-          </Typography>
-        )}
       </Box>
 
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

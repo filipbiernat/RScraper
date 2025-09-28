@@ -20,8 +20,6 @@ export interface CsvData {
   timestamps: string[];
   terms: TripTerm[];
   lastUpdated: string;
-  githubBlobUrl: string;
-  offerUrl?: string;
 }
 
 export interface ParsedCsvRow {
