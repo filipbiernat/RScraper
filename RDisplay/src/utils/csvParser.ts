@@ -70,16 +70,22 @@ export const parseCsvContent = async (csvContent: string, fileName: string): Pro
   }  // Filter out past trips
   const futureRows = parsedRows.filter(row => !isTripPast(row.dateRange));
 
+  // Filter out sold out trips (no current price in the newest timestamp)
+  const availableRows = futureRows.filter(row => {
+    const currentPrice = row.prices[0]; // First price is from newest timestamp
+    return currentPrice !== null && currentPrice !== undefined && currentPrice > 0;
+  });
+
   // Filter timestamps that have at least one valid price entry
   const activeTimestamps = timestamps.filter((_, index) =>
-    futureRows.some(row => row.prices[index] !== null && row.prices[index] !== undefined)
+    availableRows.some(row => row.prices[index] !== null && row.prices[index] !== undefined)
   );
 
   // Remove the newest timestamp from history columns to avoid duplication with "Current Price"
   const historyTimestamps = activeTimestamps.slice(1);
 
   // Convert to TripTerm objects
-  const terms: TripTerm[] = futureRows.map(row => {
+  const terms: TripTerm[] = availableRows.map(row => {
     // Current price is from the first (newest) timestamp
     const currentPrice = row.prices[0] || 0;
 
