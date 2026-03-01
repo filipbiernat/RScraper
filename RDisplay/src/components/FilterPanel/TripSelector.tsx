@@ -10,6 +10,7 @@ import {
   Select
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 interface TripSelectorProps {
   value: string | null;
@@ -24,6 +25,8 @@ export const TripSelector: React.FC<TripSelectorProps> = ({
   onChange,
   disabled = false
 }) => {
+  const { t } = useTranslation();
+
   const handleChange = (event: SelectChangeEvent<string>) => {
     const newValue = event.target.value;
     onChange(newValue === '' ? null : newValue);
@@ -31,15 +34,15 @@ export const TripSelector: React.FC<TripSelectorProps> = ({
 
   return (
     <FormControl fullWidth margin="normal" disabled={disabled}>
-      <InputLabel id="trip-select-label">Trip</InputLabel>
+      <InputLabel id="trip-select-label">{t('filter.trip')}</InputLabel>
       <Select
         labelId="trip-select-label"
         value={value || ''}
-        label="Trip"
+        label={t('filter.trip')}
         onChange={handleChange}
       >
         <MenuItem value="">
-          <em>Select Trip</em>
+          <em>{t('filter.selectTrip')}</em>
         </MenuItem>
         {options.sort().map((trip) => (
           <MenuItem key={trip} value={trip}>

@@ -1,0 +1,52 @@
+{
+    "app": {
+        "defaultTitle": "Wizualizacja danych podróży",
+        "titleSuffix": "RScraper",
+        "person_one": "osoba",
+        "person_few": "osoby",
+        "person_many": "osób",
+        "configError": "Błąd konfiguracji",
+        "configErrorHint": "Upewnij się, że plik sources.json jest dostępny w katalogu public."
+    },
+    "filter": {
+        "title": "Opcje filtrowania",
+        "country": "Kraj",
+        "selectCountry": "Wybierz kraj",
+        "trip": "Wycieczka",
+        "selectTrip": "Wybierz wycieczkę",
+        "departureAirport": "Lotnisko wylotu",
+        "selectAirport": "Wybierz lotnisko",
+        "numberOfPersons": "Liczba osób",
+        "personLabel_one": "{{count}} osoba",
+        "personLabel_few": "{{count}} osoby",
+        "personLabel_many": "{{count}} osób",
+        "selectedFilters": "Wybrane filtry:",
+        "noCountry": "Brak kraju",
+        "noTrip": "Brak wycieczki",
+        "noAirport": "Brak lotniska",
+        "noPersons": "Brak osób",
+        "personsCount_one": "{{count}} osoba",
+        "personsCount_few": "{{count}} osoby",
+        "personsCount_many": "{{count}} osób"
+    },
+    "table": {
+        "title": "Dane cenowe wycieczek",
+        "upcomingTrips_one": "{{count}} nadchodząca wycieczka",
+        "upcomingTrips_few": "{{count}} nadchodzące wycieczki",
+        "upcomingTrips_many": "{{count}} nadchodzących wycieczek",
+        "tripDates": "Daty wycieczki",
+        "currentPrice": "Aktualna cena",
+        "lastUpdated": "Ostatnia aktualizacja:",
+        "unknown": "Nieznana",
+        "viewCsvOnGithub": "📊 Dane CSV na GitHubie",
+        "viewTripOffer": "🌍 Zobacz ofertę wycieczki",
+        "errorLoadingData": "Błąd ładowania danych",
+        "noDataSelected": "Nie wybrano danych",
+        "noDataHint": "Wybierz wszystkie opcje filtrowania, aby wyświetlić dane cenowe.",
+        "noFutureTrips": "Brak przyszłych wycieczek",
+        "noFutureTripsHint": "Wszystkie wycieczki dla tego wyboru już się rozpoczęły lub zakończyły.",
+        "tripsCount_one": "{{count}} wycieczka",
+        "tripsCount_few": "{{count}} wycieczki",
+        "tripsCount_many": "{{count}} wycieczek"
+    }
+}

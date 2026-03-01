@@ -10,6 +10,7 @@ import {
   Select
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 interface CountrySelectorProps {
   value: string | null;
@@ -24,6 +25,8 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
   onChange,
   disabled = false
 }) => {
+  const { t } = useTranslation();
+
   const handleChange = (event: SelectChangeEvent<string>) => {
     const newValue = event.target.value;
     onChange(newValue === '' ? null : newValue);
@@ -31,15 +34,15 @@ export const CountrySelector: React.FC<CountrySelectorProps> = ({
 
   return (
     <FormControl fullWidth margin="normal" disabled={disabled}>
-      <InputLabel id="country-select-label">Country</InputLabel>
+      <InputLabel id="country-select-label">{t('filter.country')}</InputLabel>
       <Select
         labelId="country-select-label"
         value={value || ''}
-        label="Country"
+        label={t('filter.country')}
         onChange={handleChange}
       >
         <MenuItem value="">
-          <em>Select Country</em>
+          <em>{t('filter.selectCountry')}</em>
         </MenuItem>
         {options.sort().map((country) => (
           <MenuItem key={country} value={country}>

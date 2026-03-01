@@ -1,0 +1,46 @@
+{
+    "app": {
+        "defaultTitle": "Travel Data Visualization",
+        "titleSuffix": "RScraper",
+        "person_one": "person",
+        "person_other": "persons",
+        "configError": "Configuration Error",
+        "configErrorHint": "Please ensure sources.json is available in the public directory."
+    },
+    "filter": {
+        "title": "Filter Options",
+        "country": "Country",
+        "selectCountry": "Select Country",
+        "trip": "Trip",
+        "selectTrip": "Select Trip",
+        "departureAirport": "Departure Airport",
+        "selectAirport": "Select Airport",
+        "numberOfPersons": "Number of Persons",
+        "personLabel_one": "{{count}} person",
+        "personLabel_other": "{{count}} persons",
+        "selectedFilters": "Selected Filters:",
+        "noCountry": "No country",
+        "noTrip": "No trip",
+        "noAirport": "No airport",
+        "noPersons": "No persons",
+        "personsCount": "{{count}} persons"
+    },
+    "table": {
+        "title": "Trip Pricing Data",
+        "upcomingTrips_one": "{{count}} upcoming trip",
+        "upcomingTrips_other": "{{count}} upcoming trips",
+        "tripDates": "Trip Dates",
+        "currentPrice": "Current Price",
+        "lastUpdated": "Last updated:",
+        "unknown": "Unknown",
+        "viewCsvOnGithub": "📊 View CSV Data on GitHub",
+        "viewTripOffer": "🌍 View Trip Offer",
+        "errorLoadingData": "Error Loading Data",
+        "noDataSelected": "No Data Selected",
+        "noDataHint": "Please select all filter options to view pricing data.",
+        "noFutureTrips": "No Future Trips Available",
+        "noFutureTripsHint": "All trips for this selection have already started or ended.",
+        "tripsCount_one": "{{count}} trip",
+        "tripsCount_other": "{{count}} trips"
+    }
+}

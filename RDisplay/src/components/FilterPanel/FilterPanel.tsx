@@ -10,6 +10,7 @@ import {
   Divider,
   Toolbar
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import type { FilterState, AvailableOptions } from '../../types/filters';
 import { CountrySelector } from './CountrySelector';
 import { TripSelector } from './TripSelector';
@@ -29,6 +30,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   onFilterChange,
   loading = false
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Toolbar spacer for mobile */}
@@ -44,7 +47,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           }}
         >
           <Typography variant="h6" gutterBottom>
-            Filter Options
+            {t('filter.title')}
           </Typography>
 
           <Divider sx={{ mb: 2 }} />
@@ -84,10 +87,10 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           {/* Filter Summary */}
           <Box sx={{ mt: 3, p: 1, bgcolor: 'action.hover', borderRadius: 1 }}>
             <Typography variant="caption" color="text.secondary">
-              Selected Filters:
+              {t('filter.selectedFilters')}
             </Typography>
             <Typography variant="body2">
-              {filters.country || 'No country'} → {filters.trip || 'No trip'} → {filters.departureAirport || 'No airport'} → {filters.persons ? `${filters.persons} persons` : 'No persons'}
+              {filters.country || t('filter.noCountry')} → {filters.trip || t('filter.noTrip')} → {filters.departureAirport || t('filter.noAirport')} → {filters.persons ? t('filter.personsCount', { count: filters.persons }) : t('filter.noPersons')}
             </Typography>
           </Box>
         </Paper>

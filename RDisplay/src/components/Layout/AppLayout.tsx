@@ -15,6 +15,7 @@ import {
   useTheme
 } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -58,9 +59,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children, sidebar, title }
               <MenuIcon />
             </IconButton>
           )}
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             {title}
           </Typography>
+          <LanguageSwitcher />
         </Toolbar>
       </AppBar>
 

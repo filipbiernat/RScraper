@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
@@ -56,6 +57,7 @@ const darkTheme = createTheme({
 });
 
 const App: React.FC = () => {
+  const { t } = useTranslation();
   const [sourcesConfig, setSourcesConfig] = useState<SourcesConfig | null>(null);
   const [configLoading, setConfigLoading] = useState(true);
   const [configError, setConfigError] = useState<string | null>(null);
@@ -77,11 +79,11 @@ const App: React.FC = () => {
     }
 
     if (filters.persons) {
-      parts.push(`${filters.persons} ${filters.persons === 1 ? 'osoba' : 'osoby'}`);
+      parts.push(`${filters.persons} ${t('app.person', { count: filters.persons })}`);
     }
 
-    const baseTitle = parts.length > 0 ? parts.join(' • ') : 'Travel Data Visualization';
-    return `${baseTitle} – RScraper`;
+    const baseTitle = parts.length > 0 ? parts.join(' • ') : t('app.defaultTitle');
+    return `${baseTitle} – ${t('app.titleSuffix')}`;
   };
 
   // Load sources.json configuration directly from GitHub
@@ -134,9 +136,9 @@ const App: React.FC = () => {
       <ThemeProvider theme={darkTheme}>
         <CssBaseline />
         <div style={{ padding: '2rem', textAlign: 'center' }}>
-          <h2>Configuration Error</h2>
+          <h2>{t('app.configError')}</h2>
           <p>{configError}</p>
-          <p>Please ensure sources.json is available in the public directory.</p>
+          <p>{t('app.configErrorHint')}</p>
         </div>
       </ThemeProvider>
     );

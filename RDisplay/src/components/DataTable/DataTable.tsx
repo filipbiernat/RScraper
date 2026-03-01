@@ -18,6 +18,7 @@ import {
   IconButton
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useTranslation } from 'react-i18next';
 import type { CsvData, YearGroup } from '../../types/csvData';
 
 interface DataTableProps {
@@ -27,6 +28,7 @@ interface DataTableProps {
 }
 
 export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) => {
+  const { t } = useTranslation();
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
 
   // Initialize expanded years when data changes
@@ -86,7 +88,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
                 />
               </IconButton>
               <Typography variant="h6">
-                {yearGroup.year} ({yearGroup.terms.length} trips)
+                {yearGroup.year} ({t('table.tripsCount', { count: yearGroup.terms.length })})
               </Typography>
             </Box>
           </TableCell>
@@ -160,7 +162,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
     return (
       <Box sx={{ p: 3, textAlign: 'center' }}>
         <Typography variant="h6" color="error" gutterBottom>
-          Error Loading Data
+          {t('table.errorLoadingData')}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {error}
@@ -173,10 +175,10 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
     return (
       <Box sx={{ p: 3, textAlign: 'center' }}>
         <Typography variant="h6" color="text.secondary" gutterBottom>
-          No Data Selected
+          {t('table.noDataSelected')}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Please select all filter options to view pricing data.
+          {t('table.noDataHint')}
         </Typography>
       </Box>
     );
@@ -186,10 +188,10 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
     return (
       <Box sx={{ p: 3, textAlign: 'center' }}>
         <Typography variant="h6" color="text.secondary" gutterBottom>
-          No Future Trips Available
+          {t('table.noFutureTrips')}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          All trips for this selection have already started or ended.
+          {t('table.noFutureTripsHint')}
         </Typography>
       </Box>
     );
@@ -224,10 +226,10 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
     <Box>
       <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
         <Typography variant="h6">
-          Trip Pricing Data
+          {t('table.title')}
         </Typography>
         <Chip
-          label={`${data.terms.length} upcoming trips`}
+          label={t('table.upcomingTrips', { count: data.terms.length })}
           size="small"
           color="primary"
           variant="outlined"
@@ -248,7 +250,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
             '&:hover': { textDecoration: 'underline' }
           }}
         >
-          📊 View CSV Data on GitHub
+          {t('table.viewCsvOnGithub')}
         </Typography>
 
         {data.offerUrl && (
@@ -264,13 +266,13 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
               '&:hover': { textDecoration: 'underline' }
             }}
           >
-            🌍 View Trip Offer
+            {t('table.viewTripOffer')}
           </Typography>
         )}
       </Box>
 
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Last updated: {data.lastUpdated ? formatTimestamp(data.lastUpdated) : 'Unknown'}
+        {t('table.lastUpdated')} {data.lastUpdated ? formatTimestamp(data.lastUpdated) : t('table.unknown')}
       </Typography>
 
       <TableContainer component={Paper} sx={{ maxHeight: '70vh' }}>
@@ -278,10 +280,10 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold', minWidth: 120 }}>
-                Trip Dates
+                {t('table.tripDates')}
               </TableCell>
               <TableCell sx={{ fontWeight: 'bold', minWidth: 100 }}>
-                Current Price
+                {t('table.currentPrice')}
               </TableCell>
               {data.timestamps.map((timestamp, index) => (
                 <TableCell

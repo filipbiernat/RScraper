@@ -10,6 +10,7 @@ import {
   Radio,
   RadioGroup
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 interface PersonSelectorProps {
   value: number | null;
@@ -24,6 +25,8 @@ export const PersonSelector: React.FC<PersonSelectorProps> = ({
   onChange,
   disabled = false
 }) => {
+  const { t } = useTranslation();
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseInt(event.target.value, 10);
     onChange(isNaN(newValue) ? null : newValue);
@@ -31,7 +34,7 @@ export const PersonSelector: React.FC<PersonSelectorProps> = ({
 
   return (
     <FormControl component="fieldset" margin="normal" disabled={disabled}>
-      <FormLabel component="legend">Number of Persons</FormLabel>
+      <FormLabel component="legend">{t('filter.numberOfPersons')}</FormLabel>
       <RadioGroup
         value={value?.toString() || ''}
         onChange={handleChange}
@@ -42,7 +45,7 @@ export const PersonSelector: React.FC<PersonSelectorProps> = ({
             key={count}
             value={count.toString()}
             control={<Radio />}
-            label={`${count} person${count > 1 ? 's' : ''}`}
+            label={t('filter.personLabel', { count })}
             disabled={disabled}
           />
         ))}
