@@ -4,9 +4,14 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import type { FilterState, AvailableOptions } from '../types/filters';
-import type { SourcesConfig, TripCombination } from '../types/sources';
+import type { SourcesConfig } from '../types/sources';
 import { buildFileName } from '../utils/transliteration';
-import { checkCsvFileExists } from '../utils/csvParser';
+import {
+  fetchCsvFileEntries,
+  getAvailableAirports,
+  getAvailablePersonCounts,
+  type CsvFileEntry
+} from '../utils/csvFileDiscovery';
 
 /**
  * Custom hook for smart cascading filters
@@ -26,33 +31,15 @@ export const useFilters = (sourcesConfig: SourcesConfig | null) => {
     persons: []
   });
 
-  // Generate all possible trip combinations from sources config
-  const allCombinations = useMemo((): TripCombination[] => {
-    if (!sourcesConfig) return [];
+  // CSV file entries discovered from the data/ folder
+  const [csvFileEntries, setCsvFileEntries] = useState<CsvFileEntry[]>([]);
 
-    const combinations: TripCombination[] = [];
-    const defaults = sourcesConfig.defaults;
-
-    Object.entries(sourcesConfig.trips).forEach(([tripName, tripConfig]) => {
-      const departureLocations = tripConfig.departure_locations || defaults.departure_locations;
-      const personCounts = tripConfig.person_counts || defaults.person_counts;
-
-      departureLocations.forEach(airport => {
-        personCounts.forEach(persons => {
-          const fileName = buildFileName(tripConfig.country, tripName, airport, persons);
-          combinations.push({
-            country: tripConfig.country,
-            tripName,
-            departureAirport: airport,
-            persons,
-            fileName
-          });
-        });
-      });
-    });
-
-    return combinations;
-  }, [sourcesConfig]);
+  // Fetch CSV file listing on mount
+  useEffect(() => {
+    fetchCsvFileEntries()
+      .then(entries => setCsvFileEntries(entries))
+      .catch(err => console.error('Error fetching CSV file list:', err));
+  }, []);
 
   // Get available countries
   const countries = useMemo(() => {
@@ -68,42 +55,17 @@ export const useFilters = (sourcesConfig: SourcesConfig | null) => {
       .map(([tripName]) => tripName);
   }, [sourcesConfig, filters.country]);
 
-  // Get available airports for selected country and trip
+  // Get available airports for selected trip – derived from actual CSV files
   const departureAirports = useMemo(() => {
-    if (!sourcesConfig || !filters.country || !filters.trip) return [];
+    if (!filters.country || !filters.trip || csvFileEntries.length === 0) return [];
+    return getAvailableAirports(csvFileEntries, filters.country, filters.trip);
+  }, [csvFileEntries, filters.country, filters.trip]);
 
-    const tripConfig = sourcesConfig.trips[filters.trip];
-    if (!tripConfig) return [];
-
-    return tripConfig.departure_locations || sourcesConfig.defaults.departure_locations;
-  }, [sourcesConfig, filters.country, filters.trip]);
-
-  // Get available person counts for selected combination (based on existing CSV files)
-  const [availablePersons, setAvailablePersons] = useState<number[]>([]);
-
-  useEffect(() => {
-    const checkAvailablePersons = async () => {
-      if (!filters.country || !filters.trip || !filters.departureAirport) {
-        setAvailablePersons([]);
-        return;
-      }
-
-      const allPersonCounts = sourcesConfig?.defaults.person_counts || [1, 2];
-      const availableCounts: number[] = [];
-
-      for (const persons of allPersonCounts) {
-        const fileName = buildFileName(filters.country, filters.trip, filters.departureAirport, persons);
-        const exists = await checkCsvFileExists(fileName);
-        if (exists) {
-          availableCounts.push(persons);
-        }
-      }
-
-      setAvailablePersons(availableCounts);
-    };
-
-    checkAvailablePersons();
-  }, [filters.country, filters.trip, filters.departureAirport, sourcesConfig]);
+  // Get available person counts – derived from actual CSV files
+  const availablePersons = useMemo(() => {
+    if (!filters.country || !filters.trip || !filters.departureAirport || csvFileEntries.length === 0) return [];
+    return getAvailablePersonCounts(csvFileEntries, filters.country, filters.trip, filters.departureAirport);
+  }, [csvFileEntries, filters.country, filters.trip, filters.departureAirport]);
 
   // Update available options when filters change
   useEffect(() => {
@@ -173,7 +135,6 @@ export const useFilters = (sourcesConfig: SourcesConfig | null) => {
     filters,
     availableOptions,
     updateFilter,
-    currentFileName,
-    allCombinations
+    currentFileName
   };
 };

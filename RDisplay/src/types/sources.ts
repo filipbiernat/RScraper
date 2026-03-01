@@ -14,7 +14,7 @@ export interface SourcesConfig {
     age_param: string;
   };
   defaults: {
-    departure_locations: string[];
+    departure_locations?: string[];
     person_counts: number[];
   };
   trips: Record<string, TripConfig>;
