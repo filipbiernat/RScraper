@@ -1,5 +1,5 @@
 """
-Configuration manager for RScraper - handles sources.json processing and trip combinations generation
+Configuration manager for RScraper — handles sources.json processing and trip combinations generation.
 """
 import os
 import json
@@ -52,13 +52,13 @@ def load_config(json_file_path):
 
 
 def generate_trip_combinations(config_data):
-    """Generate all combinations of trips based on configuration"""
+    """Generate all combinations of trips based on configuration.
+    """
     global_config = config_data.get('global_config', {})
     defaults = config_data.get('defaults', {})
     trips = config_data.get('trips', {})
 
     age_param = global_config.get('age_param', '1995-01-01')
-    default_departure_locations = defaults.get('departure_locations', ['Katowice'])
     default_person_counts = defaults.get('person_counts', [1, 2])
 
     combinations = {}
@@ -68,23 +68,24 @@ def generate_trip_combinations(config_data):
         base_url = trip_details['base_url']
 
         # Use trip-specific values or fall back to defaults
-        departure_locations = trip_details.get('departure_locations', default_departure_locations)
         person_counts = trip_details.get('person_counts', default_person_counts)
 
-        # Generate all combinations for this trip
-        for departure in departure_locations:
-            for person_count in person_counts:
-                # Generate the key name
-                key_name = generate_file_name(country, trip_name, departure, person_count)
+        # Generate combinations for each person count (departure is dynamic now)
+        for person_count in person_counts:
+            # Key without departure — departure will be added during scraping
+            key_name = generate_file_name(country, trip_name, "ALL", person_count)
 
-                # Build the URL
-                url = build_url(base_url, person_count, age_param)
+            # Build the URL
+            url = build_url(base_url, person_count, age_param)
 
-                # Add to combinations
-                combinations[key_name] = {
-                    "link": url,
-                    "departure_from": departure
-                }
+            # Add to combinations
+            combinations[key_name] = {
+                "link": url,
+                "country": country,
+                "trip_name": trip_name,
+                "person_count": person_count,
+                "age_param": age_param,
+            }
 
     return combinations
 

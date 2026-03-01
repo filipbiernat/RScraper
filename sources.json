@@ -3,8 +3,10 @@
     "age_param": "1995-01-01"
   },
   "defaults": {
-    "departure_locations": ["Katowice"],
-    "person_counts": [1, 2]
+    "person_counts": [
+      1,
+      2
+    ]
   },
   "trips": {
     "Hiszpańskie El Classico": {
@@ -13,18 +15,15 @@
     },
     "Wielobarwna Mozaika": {
       "country": "Tunezja",
-      "base_url": "https://r.pl/tunezja-bajeczna-mozaika/zakwaterowanie-tuf",
-      "departure_locations": ["Katowice", "Rzeszów"]
+      "base_url": "https://r.pl/tunezja-bajeczna-mozaika/zakwaterowanie-tuf"
     },
     "Kolory Pustynnych Miast": {
       "country": "Indie",
-      "base_url": "https://r.pl/kolory-pustynnych-miast/zakwaterowanie-inr",
-      "departure_locations": ["Warszawa"]
+      "base_url": "https://r.pl/kolory-pustynnych-miast/zakwaterowanie-inr"
     },
     "Dzikie i Zmysłowe": {
       "country": "Indie",
-      "base_url": "https://r.pl/dzikie-i-zmyslowe/zakwaterowanie-idz",
-      "departure_locations": ["Warszawa"]
+      "base_url": "https://r.pl/dzikie-i-zmyslowe/zakwaterowanie-idz"
     },
     "Złoty Trójkąt i plaże Goa": {
       "country": "Indie",
@@ -40,28 +39,23 @@
     },
     "Złoty Trójkąt i Bollywood": {
       "country": "Indie",
-      "base_url": "https://r.pl/zloty-trojkat-i-bollywood/zakwaterowanie-inz",
-      "departure_locations": ["Warszawa"]
+      "base_url": "https://r.pl/zloty-trojkat-i-bollywood/zakwaterowanie-inz"
     },
     "Harce na Lance": {
       "country": "Sri Lanka",
-      "base_url": "https://r.pl/harce-na-lance/zakwaterowanie-slh",
-      "departure_locations": ["Warszawa"]
+      "base_url": "https://r.pl/harce-na-lance/zakwaterowanie-slh"
     },
     "Łza z policzka Indii": {
       "country": "Sri Lanka",
-      "base_url": "https://r.pl/sri-lanka-lza-z-policzka-indii/zakwaterowanie-slt",
-      "departure_locations": ["Warszawa"]
+      "base_url": "https://r.pl/sri-lanka-lza-z-policzka-indii/zakwaterowanie-slt"
     },
     "Chiny Cesarskie": {
       "country": "Chiny",
-      "base_url": "https://r.pl/chiny-cesarskie/zakwaterowanie-chc",
-      "departure_locations": ["Warszawa"]
+      "base_url": "https://r.pl/chiny-cesarskie/zakwaterowanie-chc"
     },
     "W krainie złotego smoka": {
       "country": "Chiny",
-      "base_url": "https://r.pl/chiny-w-krainie-zlotego-smoka/zakwaterowanie-cht",
-      "departure_locations": ["Warszawa"]
+      "base_url": "https://r.pl/chiny-w-krainie-zlotego-smoka/zakwaterowanie-cht"
     }
   }
 }

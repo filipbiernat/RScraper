@@ -21,30 +21,19 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'  # Or another version of Python that you use
+        python-version: '3.9'
 
     # Step 3: Install python dependencies
     - name: Install python dependencies
       run: |
-        pip install selenium
+        pip install requests beautifulsoup4
 
-    # Step 4: Install Chromium for Ubuntu
-    - name: Install Chromium
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y chromium-browser
-
-    # Step 5: Install chromedriver  for Ubuntu
-    - name: Install chromedriver
-      run: |
-        sudo apt-get install -y chromium-chromedriver
-
-    # Step 6: Run the scraper script
+    # Step 4: Run the scraper script
     - name: Run scraper
       run: |
         python RScraper/RScraper.py
 
-    # Step 7: Check if 'data' folder exists and commit all files if it is not empty
+    # Step 5: Check if 'data' folder exists and commit all files if it is not empty
     - name: Check if 'data' folder exists and commit all files
       if: always()  # This ensures the step will run no matter what
       run: |

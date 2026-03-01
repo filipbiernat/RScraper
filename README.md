@@ -1,12 +1,12 @@
 # RScraper & Web Interface
 
-A comprehensive travel data scraping and visualization solution for monitoring trip pricing across multiple destinations and time periods.
+A travel data scraping and visualization solution for monitoring trip pricing across multiple destinations and time periods.
 
 ## 📋 Project Overview
 
 This repository contains two main components:
-- **RScraper** - Python web scraper for collecting travel pricing data from booking websites
-- **Web Interface** - Modern React TypeScript web application for visualizing and analyzing collected data
+- **RScraper** - Python web scraper for collecting travel pricing data from r.pl
+- **Web Interface** - React TypeScript web application for visualizing collected data
 
 ## 🏗️ Repository Structure
 
@@ -29,18 +29,22 @@ RScraper/
 
 ## 🐍 RScraper - Data Collection Tool
 
+### How it works
+
+1. For each trip, the HTML page is downloaded via `requests` and parsed by `BeautifulSoup`
+2. The `__NUXT_DATA__` JSON embedded in the page is used to discover all available departure airports automatically
+3. For each departure airport, the `wyszukaj-kalkulator` API is called to retrieve dates and per-person prices
+4. Results are saved (and merged with historical data) as CSV files in `data/`
+
 ### Features
-- Automated web scraping of travel booking websites
-- Configurable trip destinations and parameters
+- No browser or browser driver required (pure HTTP requests)
+- Automatic discovery of all departure airports — no manual configuration needed
 - Historical price tracking with timestamps
-- Smart date parsing and year assignment
 - CSV export with merge capability for existing data
 
 ### Requirements
 - Python 3.8+
-- Chrome/Chromium browser
-- ChromeDriver (managed automatically by Selenium)
-- Required Python packages (see installation)
+- `requests`, `beautifulsoup4`
 
 ### Installation & Setup
 
@@ -52,7 +56,7 @@ RScraper/
 
 2. **Install Python dependencies**
    ```bash
-   pip install selenium
+   pip install requests beautifulsoup4
    ```
 
 3. **Configure trips in sources.json**
@@ -61,12 +65,12 @@ RScraper/
      "trips": {
        "Trip Name": {
          "country": "Country",
-         "base_url": "https://...",
-         "departure_locations": ["Airport1", "Airport2"]
+         "base_url": "https://r.pl/trip-slug/zakwaterowanie-xyz"
        }
      }
    }
    ```
+   Departure airports are discovered automatically — no need to list them.
 
 ### Usage
 
@@ -79,15 +83,34 @@ python RScraper.py
 **Expected output:**
 - CSV files in `../data/` directory
 - Filename format: `{Country}__{Trip}__{Airport}__{Persons}os.csv`
+- One file per trip × person count × departure airport combination
 - Automatic merging with existing historical data
 
 ### Configuration
 
 Edit `sources.json` to:
 - Add new trip destinations
-- Modify departure airports
 - Change person count options
-- Update base URLs for booking sites
+- Update base URLs
+
+#### sources.json structure
+```json
+{
+  "global_config": {
+    "age_param": "1995-01-01"
+  },
+  "defaults": {
+    "person_counts": [1, 2]
+  },
+  "trips": {
+    "Trip Name": {
+      "country": "Country",
+      "base_url": "https://r.pl/...",
+      "person_counts": [1, 2]   // optional, overrides defaults
+    }
+  }
+}
+```
 
 ## ⚛️ Web Interface - Data Visualization Dashboard
 
@@ -111,7 +134,6 @@ Edit `sources.json` to:
 1. **Install Node.js**
    - Download from: https://nodejs.org/
    - Choose LTS version (recommended)
-   - Restart terminal after installation
 
 2. **Install dependencies**
    ```bash
@@ -131,7 +153,6 @@ Edit `sources.json` to:
 
 ### Deployment to GitHub Pages
 
-**Manual deployment:**
 ```bash
 cd RDisplay
 npm install
@@ -169,16 +190,14 @@ The application uses smart cascading filters:
 ### CSV Structure
 ```csv
 ,27.09.2025 21:06:59,27.09.2025 21:37:41
-08.01 - 19.01,7579,7579
-29.01 - 09.02,7415,7415
-19.02 - 02.03,7766,7766
+08.01.2026 - 19.01.2026,7579,7579
+29.01.2026 - 09.02.2026,7415,7415
+19.02.2026 - 02.03.2026,7766,7766
 ```
 
-### Date Handling
-- **Format:** `dd.mm - dd.mm` (without year)
-- **Year logic:** Automatically assigned based on current date
-- **Sorting:** Chronological from nearest future date
-- **Filtering:** Past trips automatically hidden
+- Rows: departure date ranges
+- Columns: scrape timestamps
+- Values: price per person in PLN
 
 ## 🔄 Workflow
 
@@ -186,44 +205,34 @@ The application uses smart cascading filters:
 1. Configure trips in `sources.json`
 2. Run RScraper to collect current pricing
 3. Data automatically saved/merged in `data/` folder
-4. Schedule regular runs for price tracking
+4. Schedule regular runs via GitHub Actions (daily at 3:00 AM UTC)
 
 ### Visualization Workflow
 1. Open RScraper web interface
 2. Select desired filters (country, trip, etc.)
 3. View real-time pricing data and trends
-4. Data automatically loaded from repository
 
 ## 🛠️ Development
 
 ### Python Development (RScraper)
 ```bash
-# Install required package
-pip install selenium
+# Install required packages
+pip install requests beautifulsoup4
 
 # Run the scraper (from RScraper subfolder)
 cd RScraper
 python RScraper.py
 
-# Test configuration parsing (must be run from RScraper/ subfolder)
+# Test configuration parsing
 python -c "from config_manager import *; print(load_config('../sources.json'))"
 ```
 
 ### React Development (Web Interface)
 ```bash
-# Start development server
 cd RDisplay
-npm run dev
-
-# Type checking
-npm run type-check
-
-# Linting
-npm run lint
-
-# Build and preview
-npm run build
-npm run preview
+npm run dev       # Development server
+npm run build     # Production build
+npm run deploy    # Deploy to GitHub Pages
 ```
 
 ### Adding New Destinations
@@ -232,37 +241,22 @@ npm run preview
    ```json
    "New Trip Name": {
      "country": "New Country",
-     "base_url": "https://booking-site-url",
-     "departure_locations": ["Airport1", "Airport2"]
+     "base_url": "https://r.pl/trip-slug/zakwaterowanie-xyz"
    }
    ```
 
-2. **Run scraper** to generate initial data
+2. **Run scraper** to generate initial data — departure airports are found automatically
 3. **Web interface automatically** detects new options
 
 ## 🚀 Deployment
 
 ### RScraper Automation
-- Set up scheduled runs (cron job, Task Scheduler)
-- Consider GitHub Actions for automated data collection
-- Ensure Chrome/ChromeDriver compatibility
+- Runs automatically via GitHub Actions daily at 3:00 AM UTC
+- Commits updated CSV files back to the repository
 
 ### Web Interface Hosting
 - **GitHub Pages:** Automatic deployment from `gh-pages` branch
-- **Alternative:** Netlify, Vercel, or any static hosting
-- **CDN:** Automatic via GitHub Pages
-
-## 📱 Browser Support
-
-### Web Interface Compatibility
-- **Modern browsers:** Chrome 88+, Firefox 85+, Safari 14+, Edge 88+
-- **Mobile:** iOS Safari 14+, Chrome Mobile 88+
-- **Features:** ES2020, CSS Grid, Flexbox required
-
-### RScraper Compatibility
-- **Chrome/Chromium** required for web scraping
-- **Headless mode** supported for server deployment
-- **Cross-platform:** Windows, macOS, Linux
+- **Live URL:** https://filipbiernat.github.io/RScraper
 
 ## 📄 License
 
@@ -274,7 +268,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ```bash
 git clone https://github.com/filipbiernat/RScraper.git
 cd RScraper/RScraper
-pip install selenium
+pip install requests beautifulsoup4
 python RScraper.py
 ```
 
@@ -296,4 +290,4 @@ npm run deploy
 
 ---
 
-*Last updated: September 28, 2025*
+*Last updated: March 2026*

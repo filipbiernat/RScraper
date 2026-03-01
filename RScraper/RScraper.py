@@ -1,7 +1,7 @@
 import os
-from scraper import get_dates_and_prices
+from scraper import get_all_departures_with_prices
 from processor import process_data
-from config_manager import load_and_generate_combinations
+from config_manager import load_and_generate_combinations, generate_file_name
 
 # Get the directory where the script is located
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -18,26 +18,35 @@ if __name__ == "__main__":
     # Load configuration and generate all trip combinations
     url_data = load_and_generate_combinations(json_file_path)
 
+    # Ensure the "data" directory exists in the parent directory
+    data_dir = os.path.join(parent_dir, "data")
+    os.makedirs(data_dir, exist_ok=True)
+
     for name, details in url_data.items():
         link = details["link"]
-        departure_from = details["departure_from"]
+        country = details["country"]
+        trip_name = details["trip_name"]
+        person_count = details["person_count"]
+        age_param = details["age_param"]
 
-        print(f"\nReading data for {name}...")
-        results = get_dates_and_prices(link, departure_from)
+        print(f"\n{'='*70}")
+        print(f"Reading data for {name}...")
+        print(f"{'='*70}")
 
-        print(f"\nFound departure dates for {name}:")
-        for term, price in results:
-            print(f"{term}: {price} zł")
+        try:
+            all_departures = get_all_departures_with_prices(link, age_param, person_count)
+        except Exception as e:
+            print(f"Error reading data for {name}: {e}")
+            continue
 
-        # Ensure the "data" directory exists in the parent directory
-        data_dir = os.path.join(parent_dir, "data")
-        if not os.path.exists(data_dir):
-            print(f"\nCreating directory: {data_dir}")
-            os.makedirs(data_dir)
-        else:
-            print(f"\nDirectory already exists: {data_dir}")
+        for departure_name, results in all_departures.items():
+            file_name = generate_file_name(country, trip_name, departure_name, person_count)
 
-        file_path = os.path.join(data_dir, f"{name}.csv")
-        print(f"Saving data to: {file_path}")
+            print(f"\nFound {len(results)} departure dates for {file_name}:")
+            for term, price in results:
+                print(f"  {term}: {price} zł")
 
-        process_data(results, file_path)
+            file_path = os.path.join(data_dir, f"{file_name}.csv")
+            print(f"Saving data to: {file_path}")
+
+            process_data(results, file_path)
