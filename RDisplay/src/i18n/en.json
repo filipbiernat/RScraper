@@ -59,6 +59,8 @@
         "noDealsHint": "No attractive offers found at the moment. Check back later.",
         "explorerDealsHint": "🔥 Active deals for this configuration",
         "dealsCountForThisTrip": "deals found",
+        "showMore": "Show more",
+        "showLess": "Show less",
         "section": {
             "combined": "Top Deals",
             "priceDrops": "Price Drops",

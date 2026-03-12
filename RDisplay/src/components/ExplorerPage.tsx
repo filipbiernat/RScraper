@@ -12,7 +12,7 @@ import { DataTable } from './DataTable/DataTable';
 import { useFilters } from '../hooks/useFilters';
 import { useCsvData } from '../hooks/useCsvData';
 import { useDeals } from '../hooks/useDeals';
-import { DealCard } from './DealsPage/DealCard';
+import { ExpandableDealGrid } from './DealsPage/ExpandableDealGrid';
 
 interface ExplorerPageProps {
   sourcesConfig: SourcesConfig | null;
@@ -134,7 +134,7 @@ export const ExplorerPage: React.FC<ExplorerPageProps> = ({ sourcesConfig, confi
       {/* Deals Integration Section */}
       {matchingDeals.length > 0 && (
         <Box sx={{ bgcolor: 'background.paper', borderRadius: 2, p: 2, pt: 3, boxShadow: 1 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2, px: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1, px: 1 }}>
             <Typography variant="h6" color="primary.main" sx={{ fontWeight: 600 }}>
               {t('deals.explorerDealsHint')}
             </Typography>
@@ -143,22 +143,7 @@ export const ExplorerPage: React.FC<ExplorerPageProps> = ({ sourcesConfig, confi
             </Typography>
           </Box>
           
-          <Box
-            sx={{
-              display: 'flex',
-              gap: 2,
-              overflowX: 'auto',
-              pt: 1.5,
-              pb: 2,
-              px: 1,
-              '&::-webkit-scrollbar': { height: 6 },
-              '&::-webkit-scrollbar-thumb': { backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 3 },
-            }}
-          >
-            {matchingDeals.map((deal) => (
-              <DealCard key={`${deal.csvFileName}-${deal.dateRange}`} deal={deal} />
-            ))}
-          </Box>
+          <ExpandableDealGrid deals={matchingDeals} sectionKey="explorer-deals" />
         </Box>
       )}
 

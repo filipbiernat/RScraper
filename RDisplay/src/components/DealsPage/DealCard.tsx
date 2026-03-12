@@ -85,7 +85,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
     <Card
       sx={{
         minWidth: 280,
-        maxWidth: 320,
+        height: '100%',
         cursor: 'pointer',
         transition: 'transform 0.2s ease, box-shadow 0.2s ease',
         '&:hover': {

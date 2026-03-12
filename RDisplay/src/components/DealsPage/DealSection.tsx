@@ -1,12 +1,8 @@
-/**
- * Deal section component — groups deals by person count with horizontal scrolling
- */
-
 import React from 'react';
 import { Box, Typography, Divider } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import type { Deal } from '../../types/deals';
-import { DealCard } from './DealCard';
+import { ExpandableDealGrid } from './ExpandableDealGrid';
 
 interface DealSectionProps {
   sectionKey: string;
@@ -25,30 +21,6 @@ export const DealSection: React.FC<DealSectionProps> = ({ sectionKey, label, dea
   // Split deals by person count and limit to top 30 each to prevent rendering lag
   const deals1os = deals.filter(d => d.persons === 1).slice(0, 30);
   const deals2os = deals.filter(d => d.persons === 2).slice(0, 30);
-
-  const renderCardRow = (items: Deal[]) => (
-    <Box
-      sx={{
-        display: 'flex',
-        gap: 2,
-        overflowX: 'auto',
-        pb: 2,
-        pt: 1.5,
-        px: 1,
-        '&::-webkit-scrollbar': {
-          height: 6,
-        },
-        '&::-webkit-scrollbar-thumb': {
-          backgroundColor: 'rgba(255,255,255,0.2)',
-          borderRadius: 3,
-        },
-      }}
-    >
-      {items.map((deal, index) => (
-        <DealCard key={`${sectionKey}-${deal.csvFileName}-${deal.dateRange}-${index}`} deal={deal} />
-      ))}
-    </Box>
-  );
 
   return (
     <Box sx={{ mb: 4 }}>
@@ -69,7 +41,7 @@ export const DealSection: React.FC<DealSectionProps> = ({ sectionKey, label, dea
           <Typography variant="subtitle2" color="text.secondary" sx={{ ml: 1, mb: 0.5 }}>
             👤 {t('deals.onePersonGroup')}
           </Typography>
-          {renderCardRow(deals1os)}
+          <ExpandableDealGrid deals={deals1os} sectionKey={`${sectionKey}-1os`} />
         </Box>
       )}
 
@@ -79,7 +51,7 @@ export const DealSection: React.FC<DealSectionProps> = ({ sectionKey, label, dea
           <Typography variant="subtitle2" color="text.secondary" sx={{ ml: 1, mb: 0.5 }}>
             👥 {t('deals.twoPersonsGroup')}
           </Typography>
-          {renderCardRow(deals2os)}
+          <ExpandableDealGrid deals={deals2os} sectionKey={`${sectionKey}-2os`} />
         </Box>
       )}
 
@@ -87,3 +59,4 @@ export const DealSection: React.FC<DealSectionProps> = ({ sectionKey, label, dea
     </Box>
   );
 };
+
