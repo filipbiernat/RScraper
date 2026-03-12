@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import {
   AppBar,
   Box,
+  Button,
   CssBaseline,
   Drawer,
   IconButton,
@@ -14,21 +15,24 @@ import {
   useMediaQuery,
   useTheme
 } from '@mui/material';
-import { Menu as MenuIcon } from '@mui/icons-material';
+import { Menu as MenuIcon, Home as HomeIcon } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface AppLayoutProps {
   children: React.ReactNode;
   sidebar: React.ReactNode;
   title: string;
+  onNavigateToDeals?: () => void;
 }
 
 const DRAWER_WIDTH = 300;
 
-export const AppLayout: React.FC<AppLayoutProps> = ({ children, sidebar, title }) => {
+export const AppLayout: React.FC<AppLayoutProps> = ({ children, sidebar, title, onNavigateToDeals }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const { t } = useTranslation();
 
   const handleDrawerToggle = () => {
     setMobileDrawerOpen(!mobileDrawerOpen);
@@ -62,6 +66,16 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children, sidebar, title }
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             {title}
           </Typography>
+          {onNavigateToDeals && (
+            <Button
+              color="inherit"
+              startIcon={<HomeIcon />}
+              onClick={onNavigateToDeals}
+              sx={{ mr: 1 }}
+            >
+              {t('deals.navDeals')}
+            </Button>
+          )}
           <LanguageSwitcher />
         </Toolbar>
       </AppBar>

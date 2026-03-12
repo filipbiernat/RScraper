@@ -42,5 +42,26 @@
         "noFutureTripsHint": "All trips for this selection have already started or ended.",
         "tripsCount_one": "{{count}} trip",
         "tripsCount_other": "{{count}} trips"
+    },
+    "deals": {
+        "pageTitle": "Travel Deals",
+        "goToExplorer": "Explorer",
+        "navDeals": "Deals",
+        "errorLoading": "Error loading deals",
+        "generatedAt": "Data generated",
+        "dealsCount": "deals",
+        "onePersonGroup": "1 person",
+        "twoPersonsGroup": "2 persons",
+        "allTimeLowBadge": "All-Time Low!",
+        "lowestBadge": "Lowest",
+        "viewOnRpl": "View offer on r.pl",
+        "noDeals": "No deals found",
+        "noDealsHint": "No attractive offers found at the moment. Check back later.",
+        "section": {
+            "combined": "Top Deals",
+            "priceDrops": "Price Drops",
+            "lowestPerTrip": "Lowest Prices",
+            "allTimeLow": "All-Time Lows"
+        }
     }
 }

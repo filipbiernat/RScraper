@@ -1,4 +1,5 @@
 import os
+import subprocess
 from scraper import get_all_departures_with_prices
 from processor import process_data
 from config_manager import load_and_generate_combinations, generate_file_name
@@ -50,3 +51,14 @@ if __name__ == "__main__":
             print(f"Saving data to: {file_path}")
 
             process_data(results, file_path)
+
+    # After scraping all data, generate deals
+    print(f"\n{'='*70}")
+    print("Running deal generation script...")
+
+    generate_deals_script = os.path.join(parent_dir, "generate_deals.py")
+    if os.path.exists(generate_deals_script):
+        subprocess.run(["python", generate_deals_script], check=True)
+    else:
+        print(f"Warning: Deal generator script not found at {generate_deals_script}")
+

@@ -1,23 +1,19 @@
 /**
- * Main App component with Material-UI theme and data management
+ * Main App component with Material-UI theme, routing, and data management
  */
 
 import React, { useState, useEffect } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 import type { SourcesConfig } from './types/sources';
-import type { FilterState } from './types/filters';
-import { AppLayout } from './components/Layout/AppLayout';
-import { FilterPanel } from './components/FilterPanel/FilterPanel';
-import { DataTable } from './components/DataTable/DataTable';
-import { useFilters } from './hooks/useFilters';
-import { useCsvData } from './hooks/useCsvData';
+import { DealsPage } from './components/DealsPage/DealsPage';
+import { ExplorerPage } from './components/ExplorerPage';
 
 // Create dark theme
 const darkTheme = createTheme({
@@ -57,40 +53,20 @@ const darkTheme = createTheme({
 });
 
 const App: React.FC = () => {
-  const { t } = useTranslation();
   const [sourcesConfig, setSourcesConfig] = useState<SourcesConfig | null>(null);
   const [configLoading, setConfigLoading] = useState(true);
   const [configError, setConfigError] = useState<string | null>(null);
 
-  // Generate dynamic title based on filters
-  const generateTitle = (filters: FilterState): string => {
-    const parts: string[] = [];
-
-    if (filters.country) {
-      parts.push(filters.country);
-    }
-
-    if (filters.trip) {
-      parts.push(filters.trip);
-    }
-
-    if (filters.departureAirport) {
-      parts.push(filters.departureAirport);
-    }
-
-    if (filters.persons) {
-      parts.push(`${filters.persons} ${t('app.person', { count: filters.persons })}`);
-    }
-
-    const baseTitle = parts.length > 0 ? parts.join(' • ') : t('app.defaultTitle');
-    return `${baseTitle} – ${t('app.titleSuffix')}`;
-  };
-
-  // Load sources.json configuration directly from GitHub
+  // Load sources.json configuration
   useEffect(() => {
     const loadConfig = async () => {
       try {
-        const response = await fetch('https://raw.githubusercontent.com/filipbiernat/RScraper/master/sources.json');
+        const isDev = import.meta.env.DEV;
+        const url = isDev 
+          ? '/RScraper/sources.json'
+          : 'https://raw.githubusercontent.com/filipbiernat/RScraper/master/sources.json';
+          
+        const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`Failed to load configuration: ${response.status}`);
         }
@@ -108,65 +84,36 @@ const App: React.FC = () => {
     loadConfig();
   }, []);
 
-  // Use custom hooks for filter management and CSV data loading
-  const {
-    filters,
-    availableOptions,
-    updateFilter,
-    currentFileName
-  } = useFilters(sourcesConfig);
-
-  const {
-    data: csvData,
-    loading: csvLoading,
-    error: csvError
-  } = useCsvData(currentFileName);
-
-  // Generate current title
-  const currentTitle = generateTitle(filters);
-
-  // Update document title when filters change
-  useEffect(() => {
-    document.title = currentTitle;
-  }, [currentTitle]);
-
   // Render error state for configuration loading
   if (configError) {
     return (
       <ThemeProvider theme={darkTheme}>
         <CssBaseline />
         <div style={{ padding: '2rem', textAlign: 'center' }}>
-          <h2>{t('app.configError')}</h2>
+          <h2>Configuration Error</h2>
           <p>{configError}</p>
-          <p>{t('app.configErrorHint')}</p>
         </div>
       </ThemeProvider>
     );
   }
 
-  const sidebar = (
-    <FilterPanel
-      filters={filters}
-      availableOptions={availableOptions}
-      onFilterChange={updateFilter}
-      loading={configLoading}
-    />
-  );
-
-  const mainContent = (
-    <DataTable
-      data={csvData}
-      loading={csvLoading}
-      error={csvError}
-    />
-  );
-
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <AppLayout sidebar={sidebar} title={currentTitle}>
-        {mainContent}
-      </AppLayout>
+      <BrowserRouter basename="/RScraper/">
+        <Routes>
+          <Route path="/" element={<DealsPage />} />
+          <Route
+            path="/explorer"
+            element={
+              <ExplorerPage
+                sourcesConfig={sourcesConfig}
+                configLoading={configLoading}
+              />
+            }
+          />
+        </Routes>
+      </BrowserRouter>
     </ThemeProvider>
   );
 };

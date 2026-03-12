@@ -1,0 +1,89 @@
+/**
+ * Deal section component — groups deals by person count with horizontal scrolling
+ */
+
+import React from 'react';
+import { Box, Typography, Divider } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import type { Deal } from '../../types/deals';
+import { DealCard } from './DealCard';
+
+interface DealSectionProps {
+  sectionKey: string;
+  label: string;
+  deals: Deal[];
+  icon: React.ReactNode;
+}
+
+export const DealSection: React.FC<DealSectionProps> = ({ sectionKey, label, deals, icon }) => {
+  const { t } = useTranslation();
+
+  if (deals.length === 0) {
+    return null;
+  }
+
+  // Split deals by person count and limit to top 30 each to prevent rendering lag
+  const deals1os = deals.filter(d => d.persons === 1).slice(0, 30);
+  const deals2os = deals.filter(d => d.persons === 2).slice(0, 30);
+
+  const renderCardRow = (items: Deal[]) => (
+    <Box
+      sx={{
+        display: 'flex',
+        gap: 2,
+        overflowX: 'auto',
+        pb: 2,
+        pt: 1.5,
+        px: 1,
+        '&::-webkit-scrollbar': {
+          height: 6,
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: 'rgba(255,255,255,0.2)',
+          borderRadius: 3,
+        },
+      }}
+    >
+      {items.map((deal, index) => (
+        <DealCard key={`${sectionKey}-${deal.csvFileName}-${deal.dateRange}-${index}`} deal={deal} />
+      ))}
+    </Box>
+  );
+
+  return (
+    <Box sx={{ mb: 4 }}>
+      {/* Section header */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+        {icon}
+        <Typography variant="h5" sx={{ fontWeight: 600 }}>
+          {label}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          ({deals.length} {t('deals.dealsCount')})
+        </Typography>
+      </Box>
+
+      {/* 1 person group */}
+      {deals1os.length > 0 && (
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="subtitle2" color="text.secondary" sx={{ ml: 1, mb: 0.5 }}>
+            👤 {t('deals.onePersonGroup')}
+          </Typography>
+          {renderCardRow(deals1os)}
+        </Box>
+      )}
+
+      {/* 2 persons group */}
+      {deals2os.length > 0 && (
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="subtitle2" color="text.secondary" sx={{ ml: 1, mb: 0.5 }}>
+            👥 {t('deals.twoPersonsGroup')}
+          </Typography>
+          {renderCardRow(deals2os)}
+        </Box>
+      )}
+
+      <Divider sx={{ mt: 2 }} />
+    </Box>
+  );
+};

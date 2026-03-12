@@ -48,5 +48,26 @@
         "tripsCount_one": "{{count}} wycieczka",
         "tripsCount_few": "{{count}} wycieczki",
         "tripsCount_many": "{{count}} wycieczek"
+    },
+    "deals": {
+        "pageTitle": "Okazje podróżnicze",
+        "goToExplorer": "Eksplorator",
+        "navDeals": "Okazje",
+        "errorLoading": "Błąd ładowania okazji",
+        "generatedAt": "Dane wygenerowane",
+        "dealsCount": "okazji",
+        "onePersonGroup": "1 osoba",
+        "twoPersonsGroup": "2 osoby",
+        "allTimeLowBadge": "Min. hist.!",
+        "lowestBadge": "Najniższa",
+        "viewOnRpl": "Zobacz ofertę na r.pl",
+        "noDeals": "Brak okazji",
+        "noDealsHint": "Aktualnie nie znaleziono atrakcyjnych ofert. Sprawdź ponownie później.",
+        "section": {
+            "combined": "Top okazje",
+            "priceDrops": "Spadki cen",
+            "lowestPerTrip": "Najniższe ceny",
+            "allTimeLow": "Historyczne minima"
+        }
     }
 }
