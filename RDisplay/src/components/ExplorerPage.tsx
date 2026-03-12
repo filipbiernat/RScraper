@@ -1,19 +1,18 @@
-/**
- * Explorer page — existing filter panel + data table view, extracted from App
- * Supports URL search params for pre-filling filters from deal card clicks
- */
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Box, Typography } from '@mui/material';
 
 import type { SourcesConfig } from '../types/sources';
 import type { FilterState } from '../types/filters';
+import type { Deal } from '../types/deals';
 import { AppLayout } from './Layout/AppLayout';
 import { FilterPanel } from './FilterPanel/FilterPanel';
 import { DataTable } from './DataTable/DataTable';
 import { useFilters } from '../hooks/useFilters';
 import { useCsvData } from '../hooks/useCsvData';
+import { useDeals } from '../hooks/useDeals';
+import { DealCard } from './DealsPage/DealCard';
 
 interface ExplorerPageProps {
   sourcesConfig: SourcesConfig | null;
@@ -30,39 +29,20 @@ export const ExplorerPage: React.FC<ExplorerPageProps> = ({ sourcesConfig, confi
   const generateTitle = (filters: FilterState): string => {
     const parts: string[] = [];
 
-    if (filters.country) {
-      parts.push(filters.country);
-    }
-
-    if (filters.trip) {
-      parts.push(filters.trip);
-    }
-
-    if (filters.departureAirport) {
-      parts.push(filters.departureAirport);
-    }
-
-    if (filters.persons) {
-      parts.push(`${filters.persons} ${t('app.person', { count: filters.persons })}`);
-    }
+    if (filters.country) parts.push(filters.country);
+    if (filters.trip) parts.push(filters.trip);
+    if (filters.departureAirport) parts.push(filters.departureAirport);
+    if (filters.persons) parts.push(`${filters.persons} ${t('app.person', { count: filters.persons })}`);
 
     const baseTitle = parts.length > 0 ? parts.join(' • ') : t('app.defaultTitle');
     return `${baseTitle} – ${t('app.titleSuffix')}`;
   };
 
-  // Use custom hooks for filter management and CSV data loading
-  const {
-    filters,
-    availableOptions,
-    updateFilter,
-    currentFileName
-  } = useFilters(sourcesConfig);
-
-  const {
-    data: csvData,
-    loading: csvLoading,
-    error: csvError
-  } = useCsvData(currentFileName);
+  const { filters, availableOptions, updateFilter, currentFileName } = useFilters(sourcesConfig);
+  const { data: csvData, loading: csvLoading, error: csvError } = useCsvData(currentFileName);
+  
+  // Load deals data to show relevant deals in the explorer view
+  const { data: dealsData } = useDeals();
 
   // Apply filters from URL search params (from deal card click)
   useEffect(() => {
@@ -76,7 +56,6 @@ export const ExplorerPage: React.FC<ExplorerPageProps> = ({ sourcesConfig, confi
     if (country) {
       updateFilter('country', country);
 
-      // Use timeouts to allow cascading filter effects to settle
       if (trip) {
         setTimeout(() => {
           updateFilter('trip', trip);
@@ -97,10 +76,42 @@ export const ExplorerPage: React.FC<ExplorerPageProps> = ({ sourcesConfig, confi
     setInitialFiltersApplied(true);
   }, [sourcesConfig, searchParams, initialFiltersApplied, updateFilter]);
 
-  // Generate current title
+  // Extract deals matching current filters
+  const matchingDeals = useMemo(() => {
+    if (!dealsData || !filters.country || !filters.trip) return [];
+
+    // Flatten all deals from all sections into one array
+    const allDeals: Deal[] = [];
+    Object.values(dealsData.sections).forEach(section => {
+      allDeals.push(...section.deals);
+    });
+
+    // Remove duplicates based on csvFileName and dateRange
+    const uniqueDealsMap = new Map<string, Deal>();
+    allDeals.forEach(deal => {
+      const key = `${deal.csvFileName}-${deal.dateRange}`;
+      // Keep the one with the highest score if duplicates exist
+      if (!uniqueDealsMap.has(key) || uniqueDealsMap.get(key)!.score < deal.score) {
+        uniqueDealsMap.set(key, deal);
+      }
+    });
+
+    const uniqueDeals = Array.from(uniqueDealsMap.values());
+
+    // Filter deals based on current selections. 
+    // Airport might be 'ALL', meaning all airports are matched.
+    return uniqueDeals.filter(deal => {
+      const matchesCountry = deal.country === filters.country;
+      const matchesTrip = deal.trip === filters.trip;
+      const matchesAirport = !filters.departureAirport || filters.departureAirport === 'ALL' || deal.airport === filters.departureAirport;
+      const matchesPersons = !filters.persons || deal.persons === filters.persons;
+
+      return matchesCountry && matchesTrip && matchesAirport && matchesPersons;
+    }).sort((a, b) => b.score - a.score); // Highest score first
+  }, [dealsData, filters]);
+
   const currentTitle = generateTitle(filters);
 
-  // Update document title when filters change
   useEffect(() => {
     document.title = currentTitle;
   }, [currentTitle]);
@@ -119,11 +130,45 @@ export const ExplorerPage: React.FC<ExplorerPageProps> = ({ sourcesConfig, confi
   );
 
   const mainContent = (
-    <DataTable
-      data={csvData}
-      loading={csvLoading}
-      error={csvError}
-    />
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      {/* Deals Integration Section */}
+      {matchingDeals.length > 0 && (
+        <Box sx={{ bgcolor: 'background.paper', borderRadius: 2, p: 2, pt: 3, boxShadow: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2, px: 1 }}>
+            <Typography variant="h6" color="primary.main" sx={{ fontWeight: 600 }}>
+              {t('deals.explorerDealsHint')}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              ({matchingDeals.length} {t('deals.dealsCountForThisTrip')})
+            </Typography>
+          </Box>
+          
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 2,
+              overflowX: 'auto',
+              pt: 1.5,
+              pb: 2,
+              px: 1,
+              '&::-webkit-scrollbar': { height: 6 },
+              '&::-webkit-scrollbar-thumb': { backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 3 },
+            }}
+          >
+            {matchingDeals.map((deal) => (
+              <DealCard key={`${deal.csvFileName}-${deal.dateRange}`} deal={deal} />
+            ))}
+          </Box>
+        </Box>
+      )}
+
+      {/* Main Data Table */}
+      <DataTable
+        data={csvData}
+        loading={csvLoading}
+        error={csvError}
+      />
+    </Box>
   );
 
   return (

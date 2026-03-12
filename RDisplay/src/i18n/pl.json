@@ -63,6 +63,8 @@
         "viewOnRpl": "Zobacz ofertę na r.pl",
         "noDeals": "Brak okazji",
         "noDealsHint": "Aktualnie nie znaleziono atrakcyjnych ofert. Sprawdź ponownie później.",
+        "explorerDealsHint": "🔥 Aktywne okazje dla tej konfiguracji",
+        "dealsCountForThisTrip": "znaleziono okazji",
         "section": {
             "combined": "Top okazje",
             "priceDrops": "Spadki cen",

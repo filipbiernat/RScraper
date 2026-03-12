@@ -57,6 +57,8 @@
         "viewOnRpl": "View offer on r.pl",
         "noDeals": "No deals found",
         "noDealsHint": "No attractive offers found at the moment. Check back later.",
+        "explorerDealsHint": "🔥 Active deals for this configuration",
+        "dealsCountForThisTrip": "deals found",
         "section": {
             "combined": "Top Deals",
             "priceDrops": "Price Drops",
