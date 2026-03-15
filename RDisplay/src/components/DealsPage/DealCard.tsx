@@ -41,6 +41,18 @@ const reasonColors: Record<string, 'success' | 'warning' | 'info' | 'secondary'>
   combined: 'secondary',
 };
 
+const countryFlags: Record<string, string> = {
+  'Hiszpania': '🇪🇸',
+  'Indie': '🇮🇳',
+  'Chiny': '🇨🇳',
+  'Tunezja': '🇹🇳',
+  'Sri Lanka': '🇱🇰',
+};
+
+const getCountryFlag = (country: string): string => {
+  return countryFlags[country] ?? country.slice(0, 2).toUpperCase();
+};
+
 export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -84,7 +96,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
   return (
     <Card
       sx={{
-        minWidth: 280,
+        minWidth: 0,
         height: '100%',
         cursor: 'pointer',
         transition: 'transform 0.2s ease, box-shadow 0.2s ease',
@@ -104,6 +116,21 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
       }}
       onClick={handleClick}
     >
+      {/* Country flag badge */}
+      <Chip
+        label={getCountryFlag(deal.country)}
+        aria-label={deal.country}
+        sx={{
+          position: 'absolute',
+          top: -16,
+          left: 12,
+          fontWeight: 700,
+          fontSize: '1.5rem',
+          height: 36,
+          '& .MuiChip-label': { px: 1 },
+        }}
+      />
+
       {/* Score badge */}
       <Chip
         icon={reasonIcons[deal.reason] as React.ReactElement || undefined}

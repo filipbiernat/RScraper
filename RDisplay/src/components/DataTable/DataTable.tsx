@@ -18,8 +18,10 @@ import {
   IconButton
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ArrowUpward from '@mui/icons-material/ArrowUpward';
+import ArrowDownward from '@mui/icons-material/ArrowDownward';
 import { useTranslation } from 'react-i18next';
-import type { CsvData, YearGroup } from '../../types/csvData';
+import type { CsvData, YearGroup, TripTerm } from '../../types/csvData';
 
 interface DataTableProps {
   data: CsvData | null;
@@ -30,6 +32,8 @@ interface DataTableProps {
 export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) => {
   const { t } = useTranslation();
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   // Initialize expanded years when data changes
   React.useEffect(() => {
@@ -39,6 +43,8 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
         .map(group => group.year);
       setExpandedYears(new Set(defaultExpanded));
     }
+    setSortColumn(null);
+    setSortDirection('asc');
   }, [data]);
 
   const toggleYearExpansion = (year: number) => {
@@ -50,6 +56,37 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
         newSet.add(year);
       }
       return newSet;
+    });
+  };
+
+  const handleSortClick = (columnKey: string) => {
+    if (sortColumn === columnKey) {
+      if (sortDirection === 'asc') setSortDirection('desc');
+      else { setSortColumn(null); setSortDirection('asc'); }
+    } else {
+      setSortColumn(columnKey);
+      setSortDirection('asc');
+    }
+  };
+
+  const sortTerms = (terms: TripTerm[]): TripTerm[] => {
+    if (!sortColumn) return terms;
+    return [...terms].sort((a, b) => {
+      let aVal: number | string | null = null;
+      let bVal: number | string | null = null;
+      if (sortColumn === 'dateRange') { aVal = a.dateRange; bVal = b.dateRange; }
+      else if (sortColumn === 'currentPrice') { aVal = a.currentPrice; bVal = b.currentPrice; }
+      else {
+        const aEntry = a.priceHistory.find(p => p.timestamp === sortColumn);
+        const bEntry = b.priceHistory.find(p => p.timestamp === sortColumn);
+        aVal = aEntry?.price ?? null;
+        bVal = bEntry?.price ?? null;
+      }
+      if (aVal === null && bVal === null) return 0;
+      if (aVal === null) return 1;
+      if (bVal === null) return -1;
+      const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+      return sortDirection === 'asc' ? cmp : -cmp;
     });
   };
 
@@ -95,16 +132,16 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
         </TableRow>
 
         {/* Trip rows for this year (only if expanded) */}
-        {isExpanded && yearGroup.terms.map((term, index) => (
+        {isExpanded && sortTerms(yearGroup.terms).map((term, index) => (
           <TableRow
             key={`${yearGroup.year}-${index}`}
             hover
             sx={{ '&:nth-of-type(odd)': { bgcolor: 'action.hover' } }}
           >
-            <TableCell sx={{ fontWeight: 'medium', pl: 4 }}>
+            <TableCell sx={{ fontWeight: 'medium', textAlign: 'center' }}>
               {term.dateRange}
             </TableCell>
-            <TableCell>
+            <TableCell sx={{ textAlign: 'center' }}>
               <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
                 {formatPrice(term.currentPrice)} zł
               </Typography>
@@ -279,11 +316,19 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', minWidth: 120 }}>
+              <TableCell
+                sx={{ fontWeight: 'bold', minWidth: 120, textAlign: 'center', cursor: 'pointer' }}
+                onClick={() => handleSortClick('dateRange')}
+              >
                 {t('table.tripDates')}
+                {sortColumn === 'dateRange' && (sortDirection === 'asc' ? <ArrowUpward fontSize="inherit" /> : <ArrowDownward fontSize="inherit" />)}
               </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', minWidth: 100 }}>
+              <TableCell
+                sx={{ fontWeight: 'bold', minWidth: 100, textAlign: 'center', cursor: 'pointer' }}
+                onClick={() => handleSortClick('currentPrice')}
+              >
                 {t('table.currentPrice')}
+                {sortColumn === 'currentPrice' && (sortDirection === 'asc' ? <ArrowUpward fontSize="inherit" /> : <ArrowDownward fontSize="inherit" />)}
               </TableCell>
               {data.timestamps.map((timestamp, index) => (
                 <TableCell
@@ -291,10 +336,13 @@ export const DataTable: React.FC<DataTableProps> = ({ data, loading, error }) =>
                   sx={{
                     fontWeight: 'bold',
                     minWidth: 100,
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    cursor: 'pointer'
                   }}
+                  onClick={() => handleSortClick(timestamp)}
                 >
                   {formatTimestamp(timestamp)}
+                  {sortColumn === timestamp && (sortDirection === 'asc' ? <ArrowUpward fontSize="inherit" /> : <ArrowDownward fontSize="inherit" />)}
                 </TableCell>
               ))}
             </TableRow>

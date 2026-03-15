@@ -25,17 +25,14 @@ export const ExplorerPage: React.FC<ExplorerPageProps> = ({ sourcesConfig, confi
   const navigate = useNavigate();
   const [initialFiltersApplied, setInitialFiltersApplied] = useState(false);
 
-  // Generate dynamic title based on filters
-  const generateTitle = (filters: FilterState): string => {
+  // Generate dynamic display title shown in AppBar (no suffix)
+  const generateDisplayTitle = (filters: FilterState): string => {
     const parts: string[] = [];
-
     if (filters.country) parts.push(filters.country);
     if (filters.trip) parts.push(filters.trip);
     if (filters.departureAirport) parts.push(filters.departureAirport);
     if (filters.persons) parts.push(`${filters.persons} ${t('app.person', { count: filters.persons })}`);
-
-    const baseTitle = parts.length > 0 ? parts.join(' • ') : t('app.defaultTitle');
-    return `${baseTitle} – ${t('app.titleSuffix')}`;
+    return parts.length > 0 ? parts.join(' • ') : t('app.defaultTitle');
   };
 
   const { filters, availableOptions, updateFilter, currentFileName } = useFilters(sourcesConfig);
@@ -110,11 +107,12 @@ export const ExplorerPage: React.FC<ExplorerPageProps> = ({ sourcesConfig, confi
     }).sort((a, b) => b.score - a.score); // Highest score first
   }, [dealsData, filters]);
 
-  const currentTitle = generateTitle(filters);
+  const currentDisplayTitle = generateDisplayTitle(filters);
+  const currentDocumentTitle = `${currentDisplayTitle} – ${t('app.titleSuffix')}`;
 
   useEffect(() => {
-    document.title = currentTitle;
-  }, [currentTitle]);
+    document.title = currentDocumentTitle;
+  }, [currentDocumentTitle]);
 
   const handleNavigateToDeals = () => {
     navigate('/');
@@ -157,7 +155,7 @@ export const ExplorerPage: React.FC<ExplorerPageProps> = ({ sourcesConfig, confi
   );
 
   return (
-    <AppLayout sidebar={sidebar} title={currentTitle} onNavigateToDeals={handleNavigateToDeals}>
+    <AppLayout sidebar={sidebar} title={currentDisplayTitle} onNavigateToDeals={handleNavigateToDeals}>
       {mainContent}
     </AppLayout>
   );

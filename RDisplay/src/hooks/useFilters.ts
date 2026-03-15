@@ -9,7 +9,6 @@ import { buildFileName } from '../utils/transliteration';
 import {
   fetchCsvFileEntries,
   getAvailableAirports,
-  getAvailablePersonCounts,
   type CsvFileEntry
 } from '../utils/csvFileDiscovery';
 
@@ -61,11 +60,15 @@ export const useFilters = (sourcesConfig: SourcesConfig | null) => {
     return getAvailableAirports(csvFileEntries, filters.country, filters.trip);
   }, [csvFileEntries, filters.country, filters.trip]);
 
-  // Get available person counts – derived from actual CSV files
+  // Get available person counts – derived from all CSV files (independent of other filters)
   const availablePersons = useMemo(() => {
-    if (!filters.country || !filters.trip || !filters.departureAirport || csvFileEntries.length === 0) return [];
-    return getAvailablePersonCounts(csvFileEntries, filters.country, filters.trip, filters.departureAirport);
-  }, [csvFileEntries, filters.country, filters.trip, filters.departureAirport]);
+    if (csvFileEntries.length === 0) return [];
+    const allPersons = new Set<number>();
+    csvFileEntries.forEach(entry => {
+      if (entry.persons) allPersons.add(entry.persons);
+    });
+    return Array.from(allPersons).sort((a, b) => a - b);
+  }, [csvFileEntries]);
 
   // Update available options when filters change
   useEffect(() => {
@@ -111,12 +114,8 @@ export const useFilters = (sourcesConfig: SourcesConfig | null) => {
       if (key === 'country') {
         newFilters.trip = null;
         newFilters.departureAirport = null;
-        newFilters.persons = null;
       } else if (key === 'trip') {
         newFilters.departureAirport = null;
-        newFilters.persons = null;
-      } else if (key === 'departureAirport') {
-        newFilters.persons = null;
       }
 
       return newFilters;

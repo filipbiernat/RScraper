@@ -33,8 +33,6 @@ export const ExpandableDealGrid: React.FC<ExpandableDealGridProps> = ({ deals, s
     return null;
   }
 
-  const hasMore = deals.length > initialCount;
-  
   // If we only have 1 extra deal beyond the row, just show it instead of adding a button
   // This feels much better than having a "Show more" for just one card.
   const effectiveInitialCount = deals.length === initialCount + 1 ? deals.length : initialCount;
@@ -43,11 +41,11 @@ export const ExpandableDealGrid: React.FC<ExpandableDealGridProps> = ({ deals, s
   const visibleDeals = isExpanded ? deals : deals.slice(0, effectiveInitialCount);
 
   return (
-    <Box sx={{ width: '100%', pb: 1 }}>
+    <Box sx={{ width: '100%', pb: 1, maxWidth: 1600 }}>
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+          gridTemplateColumns: `repeat(${initialCount}, minmax(0, 1fr))`,
           gap: 2,
           pt: 1.5,
           pb: 2,

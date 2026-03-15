@@ -52,6 +52,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
           <Divider sx={{ mb: 2 }} />
 
+          {/* Person Count Selector */}
+          <PersonSelector
+            value={filters.persons}
+            options={availableOptions.persons}
+            onChange={(value) => onFilterChange('persons', value)}
+            disabled={loading || availableOptions.persons.length === 0}
+          />
+
           {/* Country Selector */}
           <CountrySelector
             value={filters.country}
@@ -76,21 +84,13 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             disabled={loading || !filters.trip || availableOptions.departureAirports.length === 0}
           />
 
-          {/* Person Count Selector */}
-          <PersonSelector
-            value={filters.persons}
-            options={availableOptions.persons}
-            onChange={(value) => onFilterChange('persons', value)}
-            disabled={loading || !filters.departureAirport || availableOptions.persons.length === 0}
-          />
-
           {/* Filter Summary */}
           <Box sx={{ mt: 3, p: 1, bgcolor: 'action.hover', borderRadius: 1 }}>
             <Typography variant="caption" color="text.secondary">
               {t('filter.selectedFilters')}
             </Typography>
             <Typography variant="body2">
-              {filters.country || t('filter.noCountry')} → {filters.trip || t('filter.noTrip')} → {filters.departureAirport || t('filter.noAirport')} → {filters.persons ? t('filter.personsCount', { count: filters.persons }) : t('filter.noPersons')}
+              {filters.persons ? t('filter.personsCount', { count: filters.persons }) : t('filter.noPersons')} → {filters.country || t('filter.noCountry')} → {filters.trip || t('filter.noTrip')} → {filters.departureAirport || t('filter.noAirport')}
             </Typography>
           </Box>
         </Paper>

@@ -1,6 +1,6 @@
 {
     "app": {
-        "defaultTitle": "Wizualizacja danych podróży",
+        "defaultTitle": "Przewodnik po cenach podróży",
         "titleSuffix": "RScraper",
         "person_one": "osoba",
         "person_few": "osoby",
