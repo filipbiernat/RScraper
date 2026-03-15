@@ -26,14 +26,14 @@ All 8 code files are staged and confirmed via `git diff --cached --stat`.
 
 ```tsx
 React.useEffect(() => {
-  if (data?.yearGroups) {
-    const defaultExpanded = data.yearGroups
-      .filter(group => group.isExpanded)
-      .map(group => group.year);
-    setExpandedYears(new Set(defaultExpanded));
-    setSortColumn(null);       // ADD
-    setSortDirection('asc');   // ADD
-  }
+    if (data?.yearGroups) {
+        const defaultExpanded = data.yearGroups
+            .filter((group) => group.isExpanded)
+            .map((group) => group.year);
+        setExpandedYears(new Set(defaultExpanded));
+        setSortColumn(null); // ADD
+        setSortDirection("asc"); // ADD
+    }
 }, [data]);
 ```
 
