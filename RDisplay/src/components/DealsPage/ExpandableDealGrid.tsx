@@ -41,7 +41,7 @@ export const ExpandableDealGrid: React.FC<ExpandableDealGridProps> = ({ deals, s
   const visibleDeals = isExpanded ? deals : deals.slice(0, effectiveInitialCount);
 
   return (
-    <Box sx={{ width: '100%', pb: 1, maxWidth: 1600 }}>
+    <Box sx={{ width: '100%', pb: 1, maxWidth: 1600, mx: 'auto' }}>
       <Box
         sx={{
           display: 'grid',
