@@ -50,9 +50,50 @@ const countryFlags: Record<string, string> = {
     Chiny: "🇨🇳",
     Tunezja: "🇹🇳",
     "Sri Lanka": "🇱🇰",
+    "Korea Południowa": "🇰🇷",
+    Japonia: "🇯🇵",
+    Wietnam: "🇻🇳",
+    Malezja: "🇲🇾",
+    Meksyk: "🇲🇽",
+    Kolumbia: "🇨🇴",
+    Chile: "🇨🇱",
+    Boliwia: "🇧🇴",
+    Peru: "🇵🇪",
+    Argentyna: "🇦🇷",
+    Brazylia: "🇧🇷",
+    Urugwaj: "🇺🇾",
+    Paragwaj: "🇵🇾",
+    Belize: "🇧🇿",
+    Gwatemala: "🇬🇹",
+    Honduras: "🇭🇳",
+    Salwador: "🇸🇻",
+    Kostaryka: "🇨🇷",
+    Panama: "🇵🇦",
+    Singapur: "🇸🇬",
+    Indonezja: "🇮🇩",
+};
+
+const splitCountryNames = (country: string): string[] => {
+    return country
+        .replace(/\s+i\s+/g, ",")
+        .split(",")
+        .map((part) => part.trim())
+        .filter(Boolean);
 };
 
 const getCountryFlag = (country: string): string => {
+    const countries = splitCountryNames(country);
+
+    if (countries.length > 1) {
+        const flags = countries
+            .map((countryName) => countryFlags[countryName])
+            .filter(Boolean);
+
+        if (flags.length === countries.length) {
+            return flags.length <= 2 ? flags.join("") : `🌍${flags.length}`;
+        }
+    }
+
     return countryFlags[country] ?? country.slice(0, 2).toUpperCase();
 };
 

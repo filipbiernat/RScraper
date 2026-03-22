@@ -56,6 +56,122 @@
     "W krainie złotego smoka": {
       "country": "Chiny",
       "base_url": "https://r.pl/chiny-w-krainie-zlotego-smoka/zakwaterowanie-cht"
+    },
+    "Korea Południowa - oko w oko z azjatyckim tygrysem": {
+      "country": "Korea Południowa",
+      "base_url": "https://r.pl/korea-poludniowa-oko-w-oko-z-azjatyckim-tygrysem/zakwaterowanie-kor"
+    },
+    "Korea Południowa i Japonia - Yin i Yang": {
+      "country": "Korea Południowa, Japonia",
+      "base_url": "https://r.pl/korea-poludniowa-i-japonia-yin-i-yang/zakwaterowanie-koj"
+    },
+    "Japonia - w krainie gejsz i samurajów": {
+      "country": "Japonia",
+      "base_url": "https://r.pl/japonia-w-krainie-gejsz-i-samurajow/zakwaterowanie-jap"
+    },
+    "Chiny i Japonia - Dwa oblicza Orientu": {
+      "country": "Chiny, Japonia",
+      "base_url": "https://r.pl/chiny-i-japonia-dwa-oblicza-orientu/zakwaterowanie-cho"
+    },
+    "Japonia - Między Kwiatem Wiśni a Błękitem Pacyfiku": {
+      "country": "Japonia",
+      "base_url": "https://r.pl/japonia-z-wypoczynkiem-w-okinawie/zakwaterowanie-jpo"
+    },
+    "Japonia - w krainie gejsz i samurajów z powrotem z Tokio": {
+      "country": "Japonia",
+      "base_url": "https://r.pl/japonia-w-krainie-gejsz-i-samurajow-z-powrotem-z-tokio/zakwaterowanie-jar"
+    },
+    "Chiny - od Wielkiego Muru po palmy Hajnanu": {
+      "country": "Chiny",
+      "base_url": "https://r.pl/chiny-od-wielkiego-muru-po-palmy-hajnanu/zakwaterowanie-chz"
+    },
+    "Chiny w dół Jangcy": {
+      "country": "Chiny",
+      "base_url": "https://r.pl/chiny-w-dol-jangcy/zakwaterowanie-cja"
+    },
+    "Chiny - Szlakiem Smoczych Gór": {
+      "country": "Chiny",
+      "base_url": "https://r.pl/chiny-szlakiem-smoczych-gor/zakwaterowanie-ctf"
+    },
+    "Good Morning, Vietnam": {
+      "country": "Wietnam",
+      "base_url": "https://r.pl/good-morning-vietnam-z-phu-quoc/zakwaterowanie-vtn"
+    },
+    "Good Morning, Vietnam z Sajgonu": {
+      "country": "Wietnam",
+      "base_url": "https://r.pl/good-morning-vietnam-z-sajgonu/zakwaterowanie-vhn"
+    },
+    "Wietnam w słomkowym kapeluszu": {
+      "country": "Wietnam",
+      "base_url": "https://r.pl/wietnam-w-slomkowym-kapeluszu/zakwaterowanie-vts"
+    },
+    "W samo południe z Sajgonu": {
+      "country": "Wietnam",
+      "base_url": "https://r.pl/w-samo-poludnie-z-sajgonu/zakwaterowanie-vsp"
+    },
+    "Singapur i Malezja - Azjatyckie Tygrysy z wypoczynkiem na Penang": {
+      "country": "Singapur, Malezja",
+      "base_url": "https://r.pl/singapur-i-malezja-azjatyckie-tygrysy-z-wypoczynkiem-na-penang/zakwaterowanie-sig"
+    },
+    "Singapur i Malezja - Azjatyckie Tygrysy z wypoczynkiem na Bali": {
+      "country": "Singapur, Malezja, Indonezja",
+      "base_url": "https://r.pl/singapur-i-malezja-azjatyckie-tygrysy-z-wypoczynkiem-na-bali/zakwaterowanie-smj"
+    },
+    "Malezja, Sumatra i Jawa - w cieniu wulkanów i orangutanów": {
+      "country": "Malezja, Indonezja",
+      "base_url": "https://r.pl/malezja-sumatra-i-jawa-w-cieniu-wulkanow-i-orangutanow/zakwaterowanie-sjs"
+    },
+    "Malezja - Malajski wehikuł czasu": {
+      "country": "Malezja",
+      "base_url": "https://r.pl/malezja-malajski-wehikul-czasu/zakwaterowanie-smb"
+    },
+    "Meksyk znany i nieznany": {
+      "country": "Meksyk",
+      "base_url": "https://r.pl/meksyk-znany-i-nieznany/zakwaterowanie-mxs"
+    },
+    "Meksyk kolonialny": {
+      "country": "Meksyk",
+      "base_url": "https://r.pl/meksyk-kolonialny/zakwaterowanie-mko"
+    },
+    "Wielka, meksykańska wyprawa": {
+      "country": "Meksyk",
+      "base_url": "https://r.pl/wielka-meksykanska-wyprawa/zakwaterowanie-mex"
+    },
+    "Wyprawa przez serce Meksyku": {
+      "country": "Meksyk",
+      "base_url": "https://r.pl/wyprawa-przez-serce-meksyku/zakwaterowanie-mxr"
+    },
+    "Tropiki Centralnej Ameryki": {
+      "country": "Meksyk, Belize, Gwatemala, Honduras, Salwador",
+      "base_url": "https://r.pl/tropiki-centralnej-ameryki/zakwaterowanie-mgs"
+    },
+    "Cumbialumbia": {
+      "country": "Kolumbia",
+      "base_url": "https://r.pl/cumbialumbia/zakwaterowanie-kmb"
+    },
+    "Na szlaku piękna": {
+      "country": "Chile, Boliwia, Peru",
+      "base_url": "https://r.pl/na-szlaku-piekna/zakwaterowanie-cbp"
+    },
+    "Bogate Wybrzeże Oceanów": {
+      "country": "Kolumbia, Kostaryka, Panama",
+      "base_url": "https://r.pl/cartagena-costa-rica-i-bocas-del-toro/zakwaterowanie-koc"
+    },
+    "Indianie Ameryki Południowej: od Muisków do Inków": {
+      "country": "Kolumbia, Peru",
+      "base_url": "https://r.pl/kolumbia-i-peru/zakwaterowanie-kpu"
+    },
+    "Podróże w naturze": {
+      "country": "Kolumbia",
+      "base_url": "https://r.pl/posrod-zwierzat/zakwaterowanie-kml"
+    },
+    "Colombia completa": {
+      "country": "Kolumbia",
+      "base_url": "https://r.pl/colombia-completa/zakwaterowanie-kod"
+    },
+    "Ukryte oblicza Ameryki Południowej": {
+      "country": "Argentyna, Urugwaj, Paragwaj, Brazylia",
+      "base_url": "https://r.pl/ukryte-oblicza-ameryki-poludniowej/zakwaterowanie-bdz"
     }
   }
 }
