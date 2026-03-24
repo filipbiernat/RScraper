@@ -18,7 +18,6 @@ import {
     Typography,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { AppLayout } from "../Layout/AppLayout";
 import { useLastMinuteData } from "../../hooks/useLastMinuteData";
 import type { LastMinuteEntry } from "../../types/lastMinute";
@@ -58,7 +57,6 @@ interface LastMinuteEntryViewModel extends LastMinuteEntry {
 export const LastMinutePage: React.FC = () => {
     const { data, loading, error } = useLastMinuteData();
     const { t, i18n } = useTranslation();
-    const navigate = useNavigate();
     const [activePersons, setActivePersons] = useState<number>(1);
     const [windowDays, setWindowDays] = useState<number>(14);
     const [selectedCountry, setSelectedCountry] = useState<string>("");
@@ -177,10 +175,6 @@ export const LastMinutePage: React.FC = () => {
         }));
     }, [filteredEntries]);
 
-    const handleNavigateToDeals = () => {
-        navigate("/");
-    };
-
     const sidebar = (
         <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
             <Toolbar />
@@ -288,7 +282,7 @@ export const LastMinutePage: React.FC = () => {
         <AppLayout
             sidebar={sidebar}
             title={t("lastMinute.pageTitle")}
-            onNavigateToDeals={handleNavigateToDeals}
+            dealsPath="/"
         >
             <Stack spacing={3}>
                 <Box>

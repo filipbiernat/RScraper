@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Box, Typography } from "@mui/material";
 
@@ -25,7 +25,6 @@ export const ExplorerPage: React.FC<ExplorerPageProps> = ({
 }) => {
     const { t } = useTranslation();
     const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
     const [initialFiltersApplied, setInitialFiltersApplied] = useState(false);
 
     // Generate dynamic display title shown in AppBar (no suffix)
@@ -142,10 +141,6 @@ export const ExplorerPage: React.FC<ExplorerPageProps> = ({
         document.title = currentDocumentTitle;
     }, [currentDocumentTitle]);
 
-    const handleNavigateToDeals = () => {
-        navigate("/");
-    };
-
     const sidebar = (
         <FilterPanel
             filters={filters}
@@ -203,11 +198,7 @@ export const ExplorerPage: React.FC<ExplorerPageProps> = ({
     );
 
     return (
-        <AppLayout
-            sidebar={sidebar}
-            title={currentDisplayTitle}
-            onNavigateToDeals={handleNavigateToDeals}
-        >
+        <AppLayout sidebar={sidebar} title={currentDisplayTitle} dealsPath="/">
             {mainContent}
         </AppLayout>
     );

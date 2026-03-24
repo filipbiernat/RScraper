@@ -32,3 +32,11 @@ Context: Testing subagent and workflow artifacts
 Problem: Generic or copied test prompts can drift into wrong assumptions about the stack, which makes generated test reports and run commands misleading.
 Solution: Whenever a testing subagent is added or updated, align both the agent prompt and `docs/testing/TEMPLATE-test.md` with the repository's actual frontend and backend commands.
 Discovered By: GitHub Copilot
+
+### 2026-03-24 — Full-Card Links Need Hit-Area Review
+
+Task: TASK-005
+Context: RDisplay deal cards and last-minute cards
+Problem: Converting cards to real links can still leave dead zones when decorative badges or action rows sit above the link or extend outside the card bounds.
+Solution: For full-card link behavior, verify the effective hit area against the full visible surface, extend the overlay to cover visible overflow, and set decorative layers to `pointer-events: none` while keeping true controls explicitly clickable.
+Discovered By: GitHub Copilot

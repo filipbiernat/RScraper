@@ -5,6 +5,7 @@
 import React from "react";
 import {
     Card,
+    CardActionArea,
     CardContent,
     CardActions,
     Typography,
@@ -13,10 +14,8 @@ import {
     IconButton,
     Tooltip,
 } from "@mui/material";
-import {
-    OpenInNew as OpenInNewIcon,
-} from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { OpenInNew as OpenInNewIcon } from "@mui/icons-material";
+import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { Deal } from "../../types/deals";
 import {
@@ -32,18 +31,14 @@ interface DealCardProps {
 }
 
 export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
-    const navigate = useNavigate();
     const { t } = useTranslation();
 
-    const handleClick = () => {
-        const params = new URLSearchParams({
-            country: deal.country,
-            trip: deal.trip,
-            airport: deal.airport,
-            persons: deal.persons.toString(),
-        });
-        navigate(`/explorer?${params.toString()}`);
-    };
+    const explorerPath = `/explorer?${new URLSearchParams({
+        country: deal.country,
+        trip: deal.trip,
+        airport: deal.airport,
+        persons: deal.persons.toString(),
+    }).toString()}`;
 
     const handleOfferClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -93,9 +88,32 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
                 position: "relative",
                 overflow: "visible",
             }}
-            onClick={handleClick}
         >
-            {/* Country flag badge */}
+            <CardActionArea
+                component={RouterLink}
+                to={explorerPath}
+                sx={{
+                    position: "absolute",
+                    top: -20,
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                    zIndex: 1,
+                    borderRadius: 2,
+                    color: "inherit",
+                    textDecoration: "none",
+                    "&:hover": {
+                        textDecoration: "none",
+                    },
+                    "&.Mui-focusVisible": {
+                        outline: "2px solid",
+                        outlineColor: "primary.main",
+                        outlineOffset: 4,
+                    },
+                }}
+                aria-label={`${deal.country} ${deal.trip}`}
+            />
+
             <Chip
                 label={getCountryFlag(deal.country)}
                 aria-label={deal.country}
@@ -103,6 +121,8 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
                     position: "absolute",
                     top: -16,
                     left: 12,
+                    zIndex: 2,
+                    pointerEvents: "none",
                     fontWeight: 700,
                     fontSize: "1.5rem",
                     height: 36,
@@ -110,7 +130,6 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
                 }}
             />
 
-            {/* Score badge */}
             <Chip
                 icon={getDealReasonIcon(deal.reason)}
                 label={getBadgeText()}
@@ -120,13 +139,14 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
                     position: "absolute",
                     top: -10,
                     right: 12,
+                    zIndex: 2,
+                    pointerEvents: "none",
                     fontWeight: 700,
                     fontSize: "0.75rem",
                 }}
             />
 
-            <CardContent sx={{ pb: 1 }}>
-                {/* Country */}
+            <CardContent sx={{ pb: 1, position: "relative", zIndex: 0 }}>
                 <Typography
                     variant="overline"
                     color="text.secondary"
@@ -135,7 +155,6 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
                     {deal.country}
                 </Typography>
 
-                {/* Trip name */}
                 <Typography
                     variant="h6"
                     component="div"
@@ -144,7 +163,6 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
                     {deal.trip}
                 </Typography>
 
-                {/* Date range */}
                 <Typography
                     variant="body2"
                     color="text.secondary"
@@ -153,7 +171,6 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
                     📅 {deal.dateRange}
                 </Typography>
 
-                {/* Airport */}
                 <Typography
                     variant="body2"
                     color="text.secondary"
@@ -162,7 +179,6 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
                     ✈️ {deal.airport}
                 </Typography>
 
-                {/* Price */}
                 <Box sx={{ display: "flex", alignItems: "baseline", gap: 1 }}>
                     <Typography
                         variant="h5"
@@ -188,13 +204,24 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
                 </Box>
             </CardContent>
 
-            <CardActions sx={{ justifyContent: "flex-end", pt: 0 }}>
+            <CardActions
+                sx={{
+                    justifyContent: "flex-end",
+                    pt: 0,
+                    position: "relative",
+                    zIndex: 2,
+                    pointerEvents: "none",
+                }}
+            >
                 {deal.offerUrl && (
                     <Tooltip title={t("deals.viewOnRpl")}>
                         <IconButton
                             size="small"
                             onClick={handleOfferClick}
-                            sx={{ color: "text.secondary" }}
+                            sx={{
+                                color: "text.secondary",
+                                pointerEvents: "auto",
+                            }}
                         >
                             <OpenInNewIcon fontSize="small" />
                         </IconButton>

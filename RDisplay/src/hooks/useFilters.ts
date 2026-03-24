@@ -9,6 +9,7 @@ import { buildFileName } from '../utils/transliteration';
 import {
   fetchCsvFileEntries,
   getAvailableAirports,
+  getAvailablePersonCounts,
   type CsvFileEntry
 } from '../utils/csvFileDiscovery';
 
@@ -60,15 +61,43 @@ export const useFilters = (sourcesConfig: SourcesConfig | null) => {
     return getAvailableAirports(csvFileEntries, filters.country, filters.trip);
   }, [csvFileEntries, filters.country, filters.trip]);
 
-  // Get available person counts – derived from all CSV files (independent of other filters)
+  const configPersons = useMemo(() => {
+    if (!sourcesConfig) return [];
+
+    const tripPersons = filters.trip
+      ? sourcesConfig.trips[filters.trip]?.person_counts
+      : undefined;
+
+    return [...(tripPersons ?? sourcesConfig.defaults.person_counts)].sort((a, b) => a - b);
+  }, [sourcesConfig, filters.trip]);
+
+  // Get available person counts – use config as a resilient baseline,
+  // then narrow to discovered CSV-backed values for the selected route.
   const availablePersons = useMemo(() => {
-    if (csvFileEntries.length === 0) return [];
-    const allPersons = new Set<number>();
-    csvFileEntries.forEach(entry => {
-      if (entry.persons) allPersons.add(entry.persons);
-    });
-    return Array.from(allPersons).sort((a, b) => a - b);
-  }, [csvFileEntries]);
+    if (
+      !filters.country ||
+      !filters.trip ||
+      !filters.departureAirport ||
+      csvFileEntries.length === 0
+    ) {
+      return configPersons;
+    }
+
+    const discoveredPersons = getAvailablePersonCounts(
+      csvFileEntries,
+      filters.country,
+      filters.trip,
+      filters.departureAirport
+    ).sort((a, b) => a - b);
+
+    return discoveredPersons.length > 0 ? discoveredPersons : configPersons;
+  }, [
+    configPersons,
+    csvFileEntries,
+    filters.country,
+    filters.trip,
+    filters.departureAirport
+  ]);
 
   // Update available options when filters change
   useEffect(() => {
@@ -102,6 +131,12 @@ export const useFilters = (sourcesConfig: SourcesConfig | null) => {
   useEffect(() => {
     if (availablePersons.length === 1 && !filters.persons) {
       setFilters(prev => ({ ...prev, persons: availablePersons[0] }));
+    }
+  }, [availablePersons, filters.persons]);
+
+  useEffect(() => {
+    if (filters.persons && availablePersons.length > 0 && !availablePersons.includes(filters.persons)) {
+      setFilters(prev => ({ ...prev, persons: null }));
     }
   }, [availablePersons, filters.persons]);
 
