@@ -25,6 +25,11 @@ interface AppLayoutProps {
     sidebar: React.ReactNode;
     title: string;
     dealsPath?: string;
+    secondaryNav?: {
+        path: string;
+        label: string;
+        icon: React.ReactNode;
+    };
 }
 
 const DRAWER_WIDTH = 300;
@@ -34,6 +39,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
     sidebar,
     title,
     dealsPath,
+    secondaryNav,
 }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -77,6 +83,17 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                     >
                         {title}
                     </Typography>
+                    {secondaryNav && (
+                        <Button
+                            color="inherit"
+                            startIcon={secondaryNav.icon}
+                            component={RouterLink}
+                            to={secondaryNav.path}
+                            sx={{ mr: 1 }}
+                        >
+                            {secondaryNav.label}
+                        </Button>
+                    )}
                     {dealsPath && (
                         <Button
                             color="inherit"

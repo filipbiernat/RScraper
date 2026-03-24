@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Box, Paper, Tab, Tabs, Typography } from "@mui/material";
+import { Bolt as BoltIcon } from "@mui/icons-material";
 
 import type { SourcesConfig } from "../types/sources";
 import type { FilterState } from "../types/filters";
@@ -212,7 +213,16 @@ export const ExplorerPage: React.FC<ExplorerPageProps> = ({
     );
 
     return (
-        <AppLayout sidebar={sidebar} title={currentDisplayTitle} dealsPath="/">
+        <AppLayout
+            sidebar={sidebar}
+            title={currentDisplayTitle}
+            dealsPath="/"
+            secondaryNav={{
+                path: "/last-minute",
+                label: t("deals.goToLastMinute"),
+                icon: <BoltIcon />,
+            }}
+        >
             {mainContent}
         </AppLayout>
     );

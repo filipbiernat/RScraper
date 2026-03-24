@@ -18,6 +18,7 @@ import {
     Typography,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { Explore as ExploreIcon } from "@mui/icons-material";
 import { AppLayout } from "../Layout/AppLayout";
 import { useLastMinuteData } from "../../hooks/useLastMinuteData";
 import type { LastMinuteEntry } from "../../types/lastMinute";
@@ -283,6 +284,11 @@ export const LastMinutePage: React.FC = () => {
             sidebar={sidebar}
             title={t("lastMinute.pageTitle")}
             dealsPath="/"
+            secondaryNav={{
+                path: "/explorer",
+                label: t("deals.goToExplorer"),
+                icon: <ExploreIcon />,
+            }}
         >
             <Stack spacing={3}>
                 <Box>
