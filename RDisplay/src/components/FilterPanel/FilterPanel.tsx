@@ -9,7 +9,6 @@ import type { FilterState, AvailableOptions } from "../../types/filters";
 import { CountrySelector } from "./CountrySelector";
 import { TripSelector } from "./TripSelector";
 import { AirportSelector } from "./AirportSelector";
-import { PersonSelector } from "./PersonSelector";
 
 interface FilterPanelProps {
     filters: FilterState;
@@ -48,16 +47,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     </Typography>
 
                     <Divider sx={{ mb: 2 }} />
-
-                    {/* Person Count Selector */}
-                    <PersonSelector
-                        value={filters.persons}
-                        options={availableOptions.persons}
-                        onChange={(value) => onFilterChange("persons", value)}
-                        disabled={
-                            loading || availableOptions.persons.length === 0
-                        }
-                    />
 
                     {/* Country Selector */}
                     <CountrySelector

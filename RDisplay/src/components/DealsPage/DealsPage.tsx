@@ -2,7 +2,7 @@
  * Deals page — dashboard with 4 sections showing travel deals
  */
 
-import React from "react";
+import React, { useState } from "react";
 import {
     Box,
     Typography,
@@ -12,6 +12,9 @@ import {
     Toolbar,
     Button,
     Container,
+    Paper,
+    Tab,
+    Tabs,
 } from "@mui/material";
 import {
     Explore as ExploreIcon,
@@ -49,6 +52,7 @@ const sectionConfig = [
 export const DealsPage: React.FC = () => {
     const { data, loading, error } = useDeals();
     const { t } = useTranslation();
+    const [activePersons, setActivePersons] = useState<number>(1);
 
     return (
         <Box sx={{ minHeight: "100vh" }}>
@@ -118,10 +122,35 @@ export const DealsPage: React.FC = () => {
                             {new Date(data.generatedAt).toLocaleString("pl-PL")}
                         </Typography>
 
+                        <Paper sx={{ p: 1, mb: 3 }}>
+                            <Tabs
+                                value={activePersons}
+                                onChange={(_event, value: number) =>
+                                    setActivePersons(value)
+                                }
+                                variant="fullWidth"
+                            >
+                                <Tab
+                                    value={1}
+                                    label={t("deals.onePersonGroup")}
+                                />
+                                <Tab
+                                    value={2}
+                                    label={t("deals.twoPersonsGroup")}
+                                />
+                            </Tabs>
+                        </Paper>
+
                         {/* Render sections in order: Combined (D), Price Drops (A), Lowest (B), All-Time Low (C) */}
                         {sectionConfig.map(({ key, icon }) => {
                             const section = data.sections[key];
                             if (!section || section.deals.length === 0) {
+                                return null;
+                            }
+                            const filteredDeals = section.deals.filter(
+                                (d) => d.persons === activePersons,
+                            );
+                            if (filteredDeals.length === 0) {
                                 return null;
                             }
                             return (
@@ -129,16 +158,22 @@ export const DealsPage: React.FC = () => {
                                     key={key}
                                     sectionKey={key}
                                     label={t(`deals.section.${key}`)}
-                                    deals={section.deals}
+                                    deals={filteredDeals}
                                     icon={icon}
                                 />
                             );
                         })}
 
                         {/* Empty state */}
-                        {Object.values(data.sections).every(
-                            (s) => s.deals.length === 0,
-                        ) && (
+                        {sectionConfig.every(({ key }) => {
+                            const section = data.sections[key];
+                            return (
+                                !section ||
+                                !section.deals.some(
+                                    (d) => d.persons === activePersons,
+                                )
+                            );
+                        }) && (
                             <Box sx={{ textAlign: "center", py: 8 }}>
                                 <Typography variant="h6" color="text.secondary">
                                     {t("deals.noDeals")}

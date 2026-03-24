@@ -21,7 +21,7 @@ export const useFilters = (sourcesConfig: SourcesConfig | null) => {
     country: null,
     trip: null,
     departureAirport: null,
-    persons: null
+    persons: 1
   });
 
   const [availableOptions, setAvailableOptions] = useState<AvailableOptions>({

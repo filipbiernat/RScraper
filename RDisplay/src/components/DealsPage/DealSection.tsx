@@ -18,9 +18,8 @@ export const DealSection: React.FC<DealSectionProps> = ({ sectionKey, label, dea
     return null;
   }
 
-  // Split deals by person count and limit to top 30 each to prevent rendering lag
-  const deals1os = deals.filter(d => d.persons === 1).slice(0, 30);
-  const deals2os = deals.filter(d => d.persons === 2).slice(0, 30);
+  // Limit to top 30 to prevent rendering lag
+  const visibleDeals = deals.slice(0, 30);
 
   return (
     <Box sx={{ mb: 4 }}>
@@ -35,25 +34,7 @@ export const DealSection: React.FC<DealSectionProps> = ({ sectionKey, label, dea
         </Typography>
       </Box>
 
-      {/* 1 person group */}
-      {deals1os.length > 0 && (
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" color="text.secondary" sx={{ ml: 1, mb: 0.5 }}>
-            👤 {t('deals.onePersonGroup')}
-          </Typography>
-          <ExpandableDealGrid deals={deals1os} sectionKey={`${sectionKey}-1os`} />
-        </Box>
-      )}
-
-      {/* 2 persons group */}
-      {deals2os.length > 0 && (
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" color="text.secondary" sx={{ ml: 1, mb: 0.5 }}>
-            👥 {t('deals.twoPersonsGroup')}
-          </Typography>
-          <ExpandableDealGrid deals={deals2os} sectionKey={`${sectionKey}-2os`} />
-        </Box>
-      )}
+      <ExpandableDealGrid deals={visibleDeals} sectionKey={sectionKey} />
 
       <Divider sx={{ mt: 2 }} />
     </Box>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Box, Typography } from "@mui/material";
+import { Box, Paper, Tab, Tabs, Typography } from "@mui/material";
 
 import type { SourcesConfig } from "../types/sources";
 import type { FilterState } from "../types/filters";
@@ -152,6 +152,20 @@ export const ExplorerPage: React.FC<ExplorerPageProps> = ({
 
     const mainContent = (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            {/* Person count tabs */}
+            <Paper sx={{ p: 1 }}>
+                <Tabs
+                    value={filters.persons ?? 1}
+                    onChange={(_event, value: number) =>
+                        updateFilter("persons", value)
+                    }
+                    variant="fullWidth"
+                >
+                    <Tab value={1} label={t("deals.onePersonGroup")} />
+                    <Tab value={2} label={t("deals.twoPersonsGroup")} />
+                </Tabs>
+            </Paper>
+
             {/* Deals Integration Section */}
             {matchingDeals.length > 0 && (
                 <Box
