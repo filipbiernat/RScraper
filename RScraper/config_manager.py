@@ -21,6 +21,10 @@ def transliterate_polish(text):
     # Replace spaces with underscores
     result = result.replace(' ', '_')
 
+    # Strip characters that are invalid in filenames on Windows
+    for ch in r'\/:*?"<>|':
+        result = result.replace(ch, '')
+
     return result
 
 
