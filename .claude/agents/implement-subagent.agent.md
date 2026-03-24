@@ -81,7 +81,7 @@ Project constraints:
 - TypeScript strict; no implicit `any`.
 - Functional components and hooks only.
 - Material-UI (MUI) v5 components and theme; no inline style overrides that bypass the theme.
-- No i18n system — user-facing text may be in Polish directly in components.
+- Use the existing i18n system for user-facing text; do not introduce new hardcoded UI strings when translation keys should be used.
 
 **General:**
 

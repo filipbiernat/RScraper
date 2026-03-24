@@ -8,6 +8,7 @@ Available agents:
 
 - `.claude/agents/orchestrator.agent.md` — main orchestration agent, waits for human approval at key gates
 - `.claude/agents/autonomous-orchestrator.agent.md` — fully autonomous variant, no approval gates, runs commits
+- `.claude/agents/ninja.agent.md` — solo autonomous executor that plans, implements, tests, and commits itself while delegating review only
 - `.claude/agents/planning-subagent.agent.md`
 - `.claude/agents/implement-subagent.agent.md`
 - `.claude/agents/code-review-subagent.agent.md`
@@ -46,7 +47,7 @@ Available agents:
 - Use task IDs in the form `TASK-001`, `TASK-002`, ... for task-scoped docs.
 - Keep fixes, re-review, re-testing, and documentation updates under the same `TASK-###` as the original implementation thread.
 - Before any commit handoff, ensure the full task candidate is cached: code + updated docs for the same `TASK-###`, with no unstaged leftovers for that task.
-- `orchestrator` never runs `git commit`; `autonomous-orchestrator` may commit only after passing review, completing required testing, and only when no manual test stop is still pending.
+- `orchestrator` never runs `git commit`; `autonomous-orchestrator` may commit only after passing review, completing required testing, and only when no manual test stop is still pending; `Ninja` is an explicit exception and may commit autonomously after passing its mandatory review and testing loop.
 
 ## Temporary Files Policy
 

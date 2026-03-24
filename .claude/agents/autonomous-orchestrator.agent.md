@@ -115,6 +115,7 @@ Important: review fixes stay under the same `TASK-###` as the implementation tha
     - changed files
     - review outcome
     - manual verification areas
+    - requested automated checks when they are known
 2. Interpret result:
     - `PASS` with `Manual Testing Required: no` -> continue to commit
     - `PASS` with `Manual Testing Required: yes` -> stop for human manual testing with file handles to task/test docs; do not commit yet
@@ -195,7 +196,9 @@ When invoking subagents, pass only the context needed for the current step.
 **testing-subagent**
 
 - Run automated checks where possible.
-- Prepare concise notes when manual validation is unavoidable.
+- Prepare concise manual browser or CLI verification guidance when manual validation is unavoidable.
+- Write the test report to `docs/testing/TASK-###-test.md` when a task ID is provided.
+- Distinguish `RDisplay/` browser validation from `RScraper/` Python or CLI validation.
 - Return `PASS`, `FAIL`, or `BLOCKED` with rationale.
 - Return final testing result only.
   </subagent_instructions>
