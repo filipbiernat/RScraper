@@ -14,88 +14,22 @@ import {
     Tooltip,
 } from "@mui/material";
 import {
-    TrendingDown as TrendingDownIcon,
-    Star as StarIcon,
-    LocalOffer as LocalOfferIcon,
     OpenInNew as OpenInNewIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { Deal } from "../../types/deals";
+import {
+    formatDealPrice,
+    getCountryFlag,
+    getDealReasonColor,
+    getDealReasonIcon,
+    getPriceDropBadgeText,
+} from "../../utils/dealPresentation";
 
 interface DealCardProps {
     deal: Deal;
 }
-
-const reasonIcons: Record<string, React.ReactNode> = {
-    priceDrop: <TrendingDownIcon fontSize="small" />,
-    allTimeLow: <StarIcon fontSize="small" />,
-    lowestPerTrip: <LocalOfferIcon fontSize="small" />,
-    combined: <StarIcon fontSize="small" />,
-};
-
-const reasonColors: Record<
-    string,
-    "success" | "warning" | "info" | "secondary"
-> = {
-    priceDrop: "success",
-    allTimeLow: "warning",
-    lowestPerTrip: "info",
-    combined: "secondary",
-};
-
-const countryFlags: Record<string, string> = {
-    Hiszpania: "🇪🇸",
-    Indie: "🇮🇳",
-    Chiny: "🇨🇳",
-    Tunezja: "🇹🇳",
-    "Sri Lanka": "🇱🇰",
-    "Korea Południowa": "🇰🇷",
-    Japonia: "🇯🇵",
-    Wietnam: "🇻🇳",
-    Malezja: "🇲🇾",
-    Meksyk: "🇲🇽",
-    Kolumbia: "🇨🇴",
-    Chile: "🇨🇱",
-    Boliwia: "🇧🇴",
-    Peru: "🇵🇪",
-    Argentyna: "🇦🇷",
-    Brazylia: "🇧🇷",
-    Urugwaj: "🇺🇾",
-    Paragwaj: "🇵🇾",
-    Belize: "🇧🇿",
-    Gwatemala: "🇬🇹",
-    Honduras: "🇭🇳",
-    Salwador: "🇸🇻",
-    Kostaryka: "🇨🇷",
-    Panama: "🇵🇦",
-    Singapur: "🇸🇬",
-    Indonezja: "🇮🇩",
-};
-
-const splitCountryNames = (country: string): string[] => {
-    return country
-        .replace(/\s+i\s+/g, ",")
-        .split(",")
-        .map((part) => part.trim())
-        .filter(Boolean);
-};
-
-const getCountryFlag = (country: string): string => {
-    const countries = splitCountryNames(country);
-
-    if (countries.length > 1) {
-        const flags = countries
-            .map((countryName) => countryFlags[countryName])
-            .filter(Boolean);
-
-        if (flags.length === countries.length) {
-            return flags.length <= 2 ? flags.join("") : `🌍${flags.length}`;
-        }
-    }
-
-    return countryFlags[country] ?? country.slice(0, 2).toUpperCase();
-};
 
 export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
     const navigate = useNavigate();
@@ -118,19 +52,15 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
         }
     };
 
-    const formatPrice = (price: number) => {
-        return price.toLocaleString("pl-PL");
-    };
-
     // Build deal badge text
     const getBadgeText = (): string => {
-        if (deal.reason === "priceDrop" && deal.previousPrice) {
-            const dropPct = (
-                ((deal.previousPrice - deal.currentPrice) /
-                    deal.previousPrice) *
-                100
-            ).toFixed(0);
-            return `-${dropPct}%`;
+        const priceDropText = getPriceDropBadgeText(
+            deal.currentPrice,
+            deal.previousPrice,
+        );
+
+        if (deal.reason === "priceDrop" && priceDropText) {
+            return priceDropText;
         }
         if (deal.reason === "allTimeLow") {
             return t("deals.allTimeLowBadge");
@@ -182,12 +112,9 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
 
             {/* Score badge */}
             <Chip
-                icon={
-                    (reasonIcons[deal.reason] as React.ReactElement) ||
-                    undefined
-                }
+                icon={getDealReasonIcon(deal.reason)}
                 label={getBadgeText()}
-                color={reasonColors[deal.reason] || "default"}
+                color={getDealReasonColor(deal.reason)}
                 size="small"
                 sx={{
                     position: "absolute",
@@ -244,7 +171,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
                             color: "primary.main",
                         }}
                     >
-                        {formatPrice(deal.currentPrice)} zł
+                        {formatDealPrice(deal.currentPrice)} zł
                     </Typography>
                     {deal.previousPrice &&
                         deal.previousPrice > deal.currentPrice && (
@@ -255,7 +182,7 @@ export const DealCard: React.FC<DealCardProps> = ({ deal }) => {
                                     color: "text.disabled",
                                 }}
                             >
-                                {formatPrice(deal.previousPrice)} zł
+                                {formatDealPrice(deal.previousPrice)} zł
                             </Typography>
                         )}
                 </Box>

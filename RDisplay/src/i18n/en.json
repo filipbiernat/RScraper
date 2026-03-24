@@ -45,6 +45,7 @@
     },
     "deals": {
         "pageTitle": "Travel Deals",
+        "goToLastMinute": "Last Minute",
         "goToExplorer": "Explorer",
         "navDeals": "Deals",
         "errorLoading": "Error loading deals",
@@ -66,6 +67,38 @@
             "priceDrops": "Price Drops",
             "lowestPerTrip": "Lowest Prices",
             "allTimeLow": "All-Time Lows"
+        }
+    },
+    "lastMinute": {
+        "pageTitle": "Last Minute",
+        "subtitle": "Trips departing within the next {{count}} days",
+        "filtersTitle": "Last minute filters",
+        "allCountries": "All countries",
+        "allAirports": "All airports",
+        "maxPrice": "Maximum price",
+        "pricePerPerson": "Price per person",
+        "showWiderWindow": "Show wider window (30 days)",
+        "generatedAt": "Data generated",
+        "errorLoading": "Error loading last minute feed",
+        "emptyTitle": "No trips in this window",
+        "emptyHint14": "No trips match the current filters within 14 days. Try expanding the range to 30 days.",
+        "emptyHint30": "No trips match the current filters even within the 30-day window.",
+        "resultsCount_one": "{{count}} offer",
+        "resultsCount_other": "{{count}} offers",
+        "openExplorer": "Explorer",
+        "openOffer": "Offer",
+        "dealBadge": "Deal",
+        "cardDates": "Dates",
+        "cardPrice": "Price",
+        "tripLengthDays_one": "{{count}} day",
+        "tripLengthDays_other": "{{count}} days",
+        "departsInDays_one": "in {{count}} day",
+        "departsInDays_other": "in {{count}} days",
+        "reason": {
+            "combined": "Top deal",
+            "priceDrop": "Price drop",
+            "lowestPerTrip": "Lowest for trip",
+            "allTimeLow": "All-time low"
         }
     }
 }

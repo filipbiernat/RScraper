@@ -14,6 +14,7 @@ import '@fontsource/roboto/700.css';
 import type { SourcesConfig } from './types/sources';
 import { DealsPage } from './components/DealsPage/DealsPage';
 import { ExplorerPage } from './components/ExplorerPage';
+import { LastMinutePage } from './components/LastMinutePage/LastMinutePage';
 
 // Create dark theme
 const darkTheme = createTheme({
@@ -103,6 +104,7 @@ const App: React.FC = () => {
       <BrowserRouter basename="/RScraper/">
         <Routes>
           <Route path="/" element={<DealsPage />} />
+          <Route path="/last-minute" element={<LastMinutePage />} />
           <Route
             path="/explorer"
             element={

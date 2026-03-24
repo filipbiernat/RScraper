@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import {
   Explore as ExploreIcon,
+  Bolt as BoltIcon,
   Star as StarIcon,
   TrendingDown as TrendingDownIcon,
   LocalOffer as LocalOfferIcon,
@@ -46,6 +47,14 @@ export const DealsPage: React.FC = () => {
           <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
             🔥 {t('deals.pageTitle')}
           </Typography>
+          <Button
+            color="inherit"
+            startIcon={<BoltIcon />}
+            onClick={() => navigate('/last-minute')}
+            sx={{ mr: 1 }}
+          >
+            {t('deals.goToLastMinute')}
+          </Button>
           <Button
             color="inherit"
             startIcon={<ExploreIcon />}

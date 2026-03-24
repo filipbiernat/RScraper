@@ -15,7 +15,7 @@ import sys
 import json
 import csv
 import statistics
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 # Add RScraper directory to path for config_manager
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -27,12 +27,21 @@ from config_manager import transliterate_polish
 DATA_DIR = os.path.join(script_dir, "data")
 SOURCES_FILE = os.path.join(script_dir, "sources.json")
 OUTPUT_FILE = os.path.join(DATA_DIR, "deals.json")
+LAST_MINUTE_OUTPUT_FILE = os.path.join(DATA_DIR, "last-minute.json")
 
 # --- Thresholds ---
 COMBINED_SCORE_THRESHOLD = 60       # Score 0-100, show deals >= 60
 PRICE_DROP_THRESHOLD_PCT = 5.0      # Minimum % drop to qualify
 LOWEST_PERCENTILE = 10              # Bottom 10th percentile within trip
 ALL_TIME_LOW_MARGIN_PCT = 2.0       # Within 2% of all-time minimum
+LAST_MINUTE_MAX_WINDOW_DAYS = 30    # Feed includes departures within 30 days
+
+DEAL_REASON_PRIORITY = {
+    'combined': 1,
+    'lowestPerTrip': 2,
+    'priceDrop': 3,
+    'allTimeLow': 4,
+}
 
 
 def parse_csv_file(file_path):
@@ -99,12 +108,25 @@ def parse_date_from_term(date_range):
         return None
 
 
+def parse_end_date_from_term(date_range):
+    """Parse end date from 'dd.mm.yyyy - dd.mm.yyyy' format."""
+    parts = date_range.split(' - ')
+    if len(parts) != 2:
+        return None
+
+    end_str = parts[1].strip()
+    try:
+        return datetime.strptime(end_str, "%d.%m.%Y").date()
+    except ValueError:
+        return None
+
+
 def is_future_term(date_range):
     """Check if the trip term is in the future."""
     start = parse_date_from_term(date_range)
     if start is None:
         return False
-    return start > date.today()
+    return start >= date.today()
 
 
 def parse_csv_filename(filename):
@@ -194,6 +216,11 @@ def collect_all_data(data_dir, sources_config):
             if not is_future_term(term['dateRange']):
                 continue
 
+            departure_date = parse_date_from_term(term['dateRange'])
+            return_date = parse_end_date_from_term(term['dateRange'])
+            if departure_date is None or return_date is None:
+                continue
+
             # Current price = newest timestamp (index 0)
             current_price = term['prices'][0] if term['prices'] else None
             if current_price is None or current_price <= 0:
@@ -217,6 +244,9 @@ def collect_all_data(data_dir, sources_config):
                 'airport': file_info['airport'],
                 'persons': file_info['persons'],
                 'dateRange': term['dateRange'],
+                'departureDate': departure_date,
+                'returnDate': return_date,
+                'tripLengthDays': (return_date - departure_date).days + 1,
                 'currentPrice': current_price,
                 'previousPrice': previous_price,
                 'allTimeMin': all_time_min,
@@ -396,6 +426,85 @@ def limit_deals(deals, limit_per_person=30):
     return limited
 
 
+def build_deal_index(*deal_groups):
+    """Build a deduplicated lookup of deals for Last Minute enrichment."""
+    deal_index = {}
+
+    for deals in deal_groups:
+        for deal in deals:
+            key = (deal['csvFileName'], deal['dateRange'], deal['persons'])
+            existing = deal_index.get(key)
+            if not existing:
+                deal_index[key] = {
+                    'dealReason': deal['reason'],
+                    'dealScore': deal['score'],
+                }
+                continue
+
+            existing_priority = DEAL_REASON_PRIORITY.get(existing['dealReason'], 0)
+            candidate_priority = DEAL_REASON_PRIORITY.get(deal['reason'], 0)
+
+            if deal['score'] > existing['dealScore']:
+                deal_index[key] = {
+                    'dealReason': deal['reason'],
+                    'dealScore': deal['score'],
+                }
+            elif deal['score'] == existing['dealScore'] and candidate_priority > existing_priority:
+                deal_index[key] = {
+                    'dealReason': deal['reason'],
+                    'dealScore': deal['score'],
+                }
+
+    return deal_index
+
+
+def build_last_minute_feed(all_terms, generated_at, deal_index):
+    """Build a dedicated Last Minute feed enriched with deal metadata."""
+    today = generated_at.date()
+    entries = []
+
+    for term in all_terms:
+        departure_date = term['departureDate']
+        if departure_date < today:
+            continue
+
+        key = (term['csvFileName'], term['dateRange'], term['persons'])
+        deal_meta = deal_index.get(key)
+
+        entries.append({
+            'country': term['country'],
+            'trip': term['trip'],
+            'airport': term['airport'],
+            'persons': term['persons'],
+            'dateRange': term['dateRange'],
+            'departureDate': departure_date.isoformat(),
+            'returnDate': term['returnDate'].isoformat(),
+            'daysUntilDeparture': (departure_date - today).days,
+            'tripLengthDays': term['tripLengthDays'],
+            'currentPrice': term['currentPrice'],
+            'previousPrice': term.get('previousPrice'),
+            'offerUrl': term.get('offerUrl', ''),
+            'csvFileName': term['csvFileName'],
+            'isDeal': deal_meta is not None,
+            'dealReason': deal_meta['dealReason'] if deal_meta else None,
+            'dealScore': deal_meta['dealScore'] if deal_meta else None,
+        })
+
+    entries.sort(key=lambda entry: (
+        entry['departureDate'],
+        0 if entry['isDeal'] else 1,
+        entry['currentPrice'],
+        entry['trip'],
+        entry['airport'],
+    ))
+
+    return {
+        'generatedAt': generated_at.isoformat(timespec='seconds'),
+        'maxWindowDays': LAST_MINUTE_MAX_WINDOW_DAYS,
+        'entries': entries,
+    }
+
+
 def main():
     print("=" * 70)
     print("GENERATE DEALS — analyzing CSV data for travel deals")
@@ -407,14 +516,24 @@ def main():
     all_terms = collect_all_data(DATA_DIR, sources_config)
     print(f"Collected {len(all_terms)} future terms from CSV files")
 
+    generated_at = datetime.now().replace(microsecond=0)
+
     if not all_terms:
-        print("No future terms found. Creating empty deals.json.")
-        result = {
-            "generatedAt": datetime.now().isoformat(timespec='seconds'),
+        print("No future terms found. Creating empty deals.json and last-minute.json.")
+        deals_result = {
+            "generatedAt": generated_at.isoformat(timespec='seconds'),
             "sections": {}
         }
         with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
-            json.dump(result, f, ensure_ascii=False, indent=2)
+            json.dump(deals_result, f, ensure_ascii=False, indent=2)
+
+        last_minute_result = {
+            'generatedAt': generated_at.isoformat(timespec='seconds'),
+            'maxWindowDays': LAST_MINUTE_MAX_WINDOW_DAYS,
+            'entries': [],
+        }
+        with open(LAST_MINUTE_OUTPUT_FILE, 'w', encoding='utf-8') as f:
+            json.dump(last_minute_result, f, ensure_ascii=False, indent=2)
         return
 
     # Run all 4 algorithms
@@ -422,6 +541,7 @@ def main():
     price_drops = find_price_drops(all_terms)
     lowest = find_lowest_per_trip(all_terms)
     all_time_low = find_all_time_lows(all_terms)
+    deal_index = build_deal_index(combined, price_drops, lowest, all_time_low)
 
     print(f"\nRaw Results:")
     print(f"  Combined Score (D):  {len(combined)} deals")
@@ -442,7 +562,7 @@ def main():
     print(f"  All-Time Low (C):    {len(all_time_low)} deals")
 
     result = {
-        "generatedAt": datetime.now().isoformat(timespec='seconds'),
+        "generatedAt": generated_at.isoformat(timespec='seconds'),
         "sections": {
             "combined": {
                 "label": "Top Deals",
@@ -466,9 +586,16 @@ def main():
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
 
+    last_minute_result = build_last_minute_feed(all_terms, generated_at, deal_index)
+
+    with open(LAST_MINUTE_OUTPUT_FILE, 'w', encoding='utf-8') as f:
+        json.dump(last_minute_result, f, ensure_ascii=False, indent=2)
+
     print(f"\n✓ Deals saved to: {OUTPUT_FILE}")
     total = len(combined) + len(price_drops) + len(lowest) + len(all_time_low)
     print(f"  Total deal entries: {total}")
+    print(f"✓ Last Minute feed saved to: {LAST_MINUTE_OUTPUT_FILE}")
+    print(f"  Total Last Minute entries: {len(last_minute_result['entries'])}")
 
 
 if __name__ == "__main__":

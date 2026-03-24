@@ -51,6 +51,7 @@
     },
     "deals": {
         "pageTitle": "Okazje podróżnicze",
+        "goToLastMinute": "Last Minute",
         "goToExplorer": "Eksplorator",
         "navDeals": "Okazje",
         "errorLoading": "Błąd ładowania okazji",
@@ -72,6 +73,41 @@
             "priceDrops": "Spadki cen",
             "lowestPerTrip": "Najniższe ceny",
             "allTimeLow": "Historyczne minima"
+        }
+    },
+    "lastMinute": {
+        "pageTitle": "Last Minute",
+        "subtitle": "Wyjazdy z wylotem w ciągu najbliższych {{count}} dni",
+        "filtersTitle": "Filtry last minute",
+        "allCountries": "Wszystkie kraje",
+        "allAirports": "Wszystkie lotniska",
+        "maxPrice": "Maksymalna cena",
+        "pricePerPerson": "Cena za osobę",
+        "showWiderWindow": "Pokaż szersze okno (30 dni)",
+        "generatedAt": "Dane wygenerowane",
+        "errorLoading": "Błąd ładowania last minute",
+        "emptyTitle": "Brak wyjazdów w tym oknie",
+        "emptyHint14": "Nie znaleziono wyjazdów spełniających bieżące filtry w ciągu 14 dni. Spróbuj rozszerzyć zakres do 30 dni.",
+        "emptyHint30": "Nie znaleziono wyjazdów spełniających bieżące filtry nawet w oknie 30 dni.",
+        "resultsCount_one": "{{count}} oferta",
+        "resultsCount_few": "{{count}} oferty",
+        "resultsCount_many": "{{count}} ofert",
+        "openExplorer": "Eksplorator",
+        "openOffer": "Oferta",
+        "dealBadge": "Okazja",
+        "cardDates": "Termin",
+        "cardPrice": "Cena",
+        "tripLengthDays_one": "{{count}} dzień",
+        "tripLengthDays_few": "{{count}} dni",
+        "tripLengthDays_many": "{{count}} dni",
+        "departsInDays_one": "za {{count}} dzień",
+        "departsInDays_few": "za {{count}} dni",
+        "departsInDays_many": "za {{count}} dni",
+        "reason": {
+            "combined": "Top okazja",
+            "priceDrop": "Spadek ceny",
+            "lowestPerTrip": "Najniższa w wycieczce",
+            "allTimeLow": "Minimum historyczne"
         }
     }
 }
